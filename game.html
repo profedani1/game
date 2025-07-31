@@ -113,7 +113,7 @@
       background: #1E1E1E;
       color: #00FFAA;
       border: 0.2vh solid #00FFAA;
-      font-size: 2vh;
+      font-size: 8vh;
       text-transform: uppercase;
       cursor: pointer;
       position: absolute;
@@ -1075,7 +1075,6 @@ function loadTransit() {
   let selectedEnglish = null;
   let selectedSpanish = null;
   const matchedPairs = new Set();
-  let recentQueue = [];
 
   const totalMatches = questions.length;
   const progressBoxes = [];
@@ -1220,46 +1219,46 @@ function loadTransit() {
     selectedSpanish = null;
   }
 
-  function getNextUniqueIndex(arrLength) {
-    let candidate;
-    let attempts = 0;
-    do {
-      candidate = Math.floor(Math.random() * arrLength);
-      attempts++;
-    } while (recentQueue.includes(candidate) && attempts < 10);
-
-    recentQueue.push(candidate);
-    if (recentQueue.length > 5) recentQueue.shift();
-    return candidate;
-  }
-
   function startSpawner() {
+    let pairQueue = [...questions];
+    let currentIndex = 0;
+
+    function shuffleQueue() {
+      for (let i = pairQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pairQueue[i], pairQueue[j]] = [pairQueue[j], pairQueue[i]];
+      }
+    }
+
+    shuffleQueue();
+
     const interval = setInterval(() => {
       if (matchedPairs.size >= totalMatches) {
         clearInterval(interval);
         return;
       }
 
-      const index = getNextUniqueIndex(questions.length);
-      const pair = questions[index];
+      const pair = pairQueue[currentIndex];
       const pairKey = pair.question;
 
-      const rand = Math.random();
-      if (rand < 0.33) {
-        spawnButton(pair.question, 'en', pairKey);
-      } else if (rand < 0.66) {
-        spawnButton(pair.translation, 'es', pairKey);
-      } else {
+      if (!matchedPairs.has(pairKey)) {
         spawnButton(pair.question, 'en', pairKey);
         spawnButton(pair.translation, 'es', pairKey);
       }
-    }, 200);
+
+      currentIndex++;
+      if (currentIndex >= pairQueue.length) {
+        currentIndex = 0;
+        shuffleQueue();
+      }
+    }, 800); // You can tweak interval speed here
   }
 
   updateProgressUI();
   createLaneLines();
   startSpawner();
 }
+
  
 function loadCatch() {
   const q = questions[currentQuestionIndex];
