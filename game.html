@@ -113,7 +113,7 @@
       background: #1E1E1E;
       color: #00FFAA;
       border: 0.2vh solid #00FFAA;
-      font-size: 2vh;
+      font-size: 6vh;
       text-transform: uppercase;
       cursor: pointer;
       position: absolute;
@@ -820,6 +820,9 @@ function loadSneak() {
 
   const q2t = new Map(questions.map(q => [q.question, q.translation]));
   const allQuestions = [...new Set(questions.map(q => q.question))];
+  const allTranslations = [...new Set(questions.map(q => q.translation))];
+
+  let usedTranslations = new Set();
 
   function generateInstructions(count) {
     const instructions = [];
@@ -883,10 +886,25 @@ function loadSneak() {
 
   function renderSneakButtons() {
     sneakButtonsDiv.innerHTML = '';
-    const allTranslations = [...new Set(questions.map(q => q.translation))];
-    const shuffled = shuffle([...allTranslations]);
 
-    shuffled.forEach(word => {
+    // Ensure all options appear eventually
+    const remainingTranslations = allTranslations.filter(t => !usedTranslations.has(t));
+    const batch = [];
+
+    // Always prioritize showing unused translations first
+    if (remainingTranslations.length >= 8) {
+      batch.push(...shuffle(remainingTranslations).slice(0, 8));
+    } else {
+      batch.push(...remainingTranslations);
+      const stillNeeded = 8 - batch.length;
+      const extras = shuffle(allTranslations).filter(t => !batch.includes(t)).slice(0, stillNeeded);
+      batch.push(...extras);
+    }
+
+    batch.forEach(word => usedTranslations.add(word));
+
+    // Shuffle final batch for randomness
+    shuffle(batch).forEach(word => {
       const btn = document.createElement('button');
       btn.className = "translation-button choose-button";
       btn.innerText = word;
@@ -894,6 +912,11 @@ function loadSneak() {
       btn.onclick = () => selectSneakButton(btn);
       sneakButtonsDiv.appendChild(btn);
     });
+
+    // Reset usedTranslations when all have been shown
+    if (usedTranslations.size >= allTranslations.length) {
+      usedTranslations.clear();
+    }
   }
 
   function selectSneakButton(button) {
@@ -912,10 +935,8 @@ function loadSneak() {
           instructionIndex++;
 
           if (isLevelMode) {
-            // ✅ SEQUENCE MODE: end activity after 1 instruction set
             finishLevel(mistakes === 0);
           } else {
-            // ✅ STANDALONE MODE: keep going forever
             if (instructionIndex >= instructions.length) {
               instructionIndex = 0;
             }
@@ -931,13 +952,15 @@ function loadSneak() {
 
       setTimeout(() => {
         if (isLevelMode) {
-          finishLevel(false); // ❌ wrong = restart level
+          finishLevel(false);
         } else {
-          showSneakInstruction(); // 🔁 retry same instruction
+          showSneakInstruction();
         }
       }, 1500);
     }
   }
+}
+
 
   function playSelectedWords() {
     const phrase = selectedWords.join('... ');
