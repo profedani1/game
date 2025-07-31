@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Language Game Menu</title>
+  <style>
+    body {
+      background: #121212;
+      color: #00FFAA;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    button {
+      padding: 1em 2em;
+      margin: 1em;
+      font-size: 1.2em;
+      background: #00FFAA;
+      color: #121212;
+      border: none;
+      border-radius: 0.5em;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #00CC88;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Select Content</h1>
+
+  <button onclick="selectContent('A')">Load Content A</button>
+  <button onclick="selectContent('B')">Load Content B</button>
+  <button onclick="playGame()" id="playButton" disabled>Play Game</button>
+
+  <script>
+    const contentA = [
+      { question: "apple", translation: "manzana" },
+      { question: "grape", translation: "uva" },
+      { question: "banana", translation: "plátano" }
+    ];
+
+    const contentB = [
+      { question: "red", translation: "rojo" },
+      { question: "blue", translation: "azul" },
+      { question: "yellow", translation: "amarillo" }
+    ];
+
+    let selected = null;
+
+    function selectContent(option) {
+      if (option === 'A') {
+        localStorage.setItem("questions", JSON.stringify(contentA));
+      } else if (option === 'B') {
+        localStorage.setItem("questions", JSON.stringify(contentB));
+      }
+
+      selected = option;
+      document.getElementById("playButton").disabled = false;
+      alert(`Content ${option} loaded!`);
+    }
+
+    function playGame() {
+      if (selected) {
+        window.location.href = "game.html";
+      } else {
+        alert("Please select a content first.");
+      }
+    }
+  </script>
+
+</body>
+</html>
