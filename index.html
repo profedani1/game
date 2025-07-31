@@ -1,85 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Language Game Menu</title>
-  <style>
-    body {
-      background: #121212;
-      color: #00FFAA;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    button {
-      padding: 1em 2em;
-      margin: 1em;
-      font-size: 1.2em;
-      background: #00FFAA;
-      color: #121212;
-      border: none;
-      border-radius: 0.5em;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #00CC88;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Language Game Menu</title>
+<style>
+  body {
+    background: #121212;
+    color: #00FFAA;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;    width: 100%;
+
+    height: 100vh;
+  }
+
+  /* Option buttons container: 2 columns, no vertical gap */
+  #buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0;
+    column-gap: 0.2em;
+    width: 90%;
+  }
+  #buttons button {
+    width: 100%;
+    font-size: 0.9em;
+    background: #00FFAA;
+    color: #121212;
+    border: none;
+    margin:0.2vh;
+        padding: 1em 0;
+
+    cursor: pointer;
+    border-bottom: 1px solid #0fbb88;
+  }
+  #buttons button:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+  #buttons button:hover {
+    background: #00CC88;
+  }
+  button:disabled {
+    background: #555;
+    cursor: not-allowed;
+    color: #ccc;
+  }
+  #playButton {
+    margin-top: 0.5em;
+    padding: 2vh 1vh;
+    border-radius: 100%;
+    border: none;
+    background: #00FFAA;
+    color: #121212;
+    font-size: 2vh;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #playButton:disabled {
+    background: #555;
+    cursor: not-allowed;
+    color: #ccc;
+  }
+  #playButton:hover:enabled {
+    background: #00CC88;
+  }
+
+  /* Word container: grid with two columns (English and Spanish buttons) */
+  #wordContainer {
+    width: 100%;
+    max-width: 700px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0;
+    background: #1f1f1f;
+    padding: 1em;
+    border-radius: 0.6em;
+    min-height: 200px;
+    user-select: none;
+  }
+
+  /* Each word is a button filling its grid cell */
+  .word-card {
+    background: #121212;
+    border: 1px solid #00FFAA;
+    color:#00FFAA;
+    border-radius: 0.5em;
+    padding: 0.5em 1.2em;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1.1em;
+    transition: background 0.2s, color 0.2s;
+    width: 100%;
+  }
+  .word-card:hover {
+    background: #00FFAA;
+    color: #121212;
+  }
+</style>
 </head>
 <body>
 
-  <h1>Select Content</h1>
 
-  <button onclick="selectContent('A')">Load Content A</button>
-  <button onclick="selectContent('B')">Load Content B</button>
-  <button onclick="playGame()" id="playButton" disabled>Play Game</button>
+<div id="buttons">
+  <button onclick="selectContent('time')">Time Prepositions</button>
+  <button onclick="selectContent('movement')">Movement Prepositions</button>
+  <button onclick="selectContent('cause')">Cause Prepositions</button>
+  <button onclick="selectContent('compare')">Comparison Prepositions</button>
+</div>
 
-  <script>
-    const contentA = [
-      { question: "apple", translation: "manzana" },
-      { question: "grape", translation: "uva" },
-      { question: "banana", translation: "plátano" }
-    ];
+<button onclick="playGame()" id="playButton" disabled>PLAY</button>
 
-    const contentB = [
-      { question: "above", translation: "encima" },
-  { question: "over", translation: "sobre" },
-  { question: "under", translation: "debajo" },
-  { question: "below", translation: "abajo" },
-  { question: "inside", translation: "dentro" },
-  { question: "behind", translation: "detrás" },
-  { question: "in front", translation: "delante" },
-  { question: "between", translation: "entre" },
-  { question: "beside", translation: "junto" },
-  { question: "across", translation: "cruzando" }
-    ];
+<div id="wordContainer" aria-live="polite" aria-label="Selected prepositions list"></div>
 
-    let selected = null;
+<script>
+  const contentTime = [
+  
+    { question: "since", translation: "desde" },
+    { question: "...ago", translation: "hace..." },
+        { question: "right after", translation: "luego" },
+    { question: "all of a sudden", translation: "de repente" },
+    { question: "before", translation: "antes" },
+    { question: "after", translation: "después" },
+    { question: "until", translation: "hasta" },
+    { question: "from", translation: "desde" },
+    { question: "during", translation: "durante" }
+  ];
 
-    function selectContent(option) {
-      if (option === 'A') {
-        localStorage.setItem("questions", JSON.stringify(contentA));
-      } else if (option === 'B') {
-        localStorage.setItem("questions", JSON.stringify(contentB));
-      }
+  const contentMovement = [
+    { question: "out", translation: "fuera" },
+    { question: "towards", translation: "hacia" },
+    { question: "across", translation: "cruzando" },
+    { question: "along", translation: "a lo largo" },
+    { question: "under", translation: "debajo" },
+    { question: "beyond", translation: "más allá" },
+    { question: "around", translation: "alrededor" },
+    { question: "up", translation: "arriba" },
+    { question: "down", translation: "abajo" }
+  ];
 
-      selected = option;
-      document.getElementById("playButton").disabled = false;
-      alert(`Content ${option} loaded!`);
+  const contentCause = [
+    { question: "due to", translation: "debido a" },
+    { question: "thanks to", translation: "gracias a" },
+    { question: "because of", translation: "debido a" },
+    { question: "of course", translation: "claro" },
+        { question: "therefore", translation: "por lo tanto" },
+    { question: "since", translation: "ya que" },
+    { question: "because of that", translation: "por eso" }
+  ];
+
+  const contentCompare = [
+    { question: "like / as", translation: "como" },
+    { question: "unlike", translation: "a diferencia de" },
+    { question: "than", translation: "que" },
+    { question: "with", translation: "con" },
+    { question: "without", translation: "sin" },
+    { question: "according to", translation: "según" },
+    { question: "in contrast to", translation: "en contraste" },
+    { question: "similar to", translation: "igual que" },
+
+    { question: "the opposite", translation: "lo opuesto" }
+  ];
+
+  let selected = null;
+  let currentContent = [];
+
+  function selectContent(option) {
+    const wordContainer = document.getElementById("wordContainer");
+    wordContainer.innerHTML = ""; // clear previous
+
+    switch(option) {
+      case 'time': currentContent = contentTime; break;
+      case 'movement': currentContent = contentMovement; break;
+      case 'cause': currentContent = contentCause; break;
+      case 'compare': currentContent = contentCompare; break;
+      default: currentContent = []; break;
     }
 
-    function playGame() {
-      if (selected) {
-        window.location.href = "game.html";
-      } else {
-        alert("Please select a content first.");
-      }
+    selected = option;
+    document.getElementById("playButton").disabled = false;
+
+    // For each pair, create two buttons side by side: English then Spanish
+    currentContent.forEach(({question, translation}) => {
+      const enBtn = document.createElement("button");
+      enBtn.className = "word-card";
+      enBtn.textContent = question;
+      enBtn.title = "English";
+      enBtn.dataset.side = "question";
+
+      const esBtn = document.createElement("button");
+      esBtn.className = "word-card";
+      esBtn.textContent = translation;
+      esBtn.title = "Spanish";
+      esBtn.dataset.side = "translation";
+
+      // Append both buttons to the container
+      wordContainer.appendChild(enBtn);
+      wordContainer.appendChild(esBtn);
+    });
+  }
+
+  function playGame() {
+    if(selected) {
+      window.location.href = "game.html";
+    } else {
+      alert("Please select a content first.");
     }
-  </script>
+  }
+</script>
 
 </body>
 </html>
