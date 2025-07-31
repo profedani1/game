@@ -222,13 +222,15 @@
     });
   }
 
-  function playGame() {
-    if(selected) {
-      window.location.href = "game.html";
-    } else {
-      alert("Please select a content first.");
-    }
+ function playGame() {
+  if (selected && currentContent.length > 0) {
+    localStorage.setItem("questions", JSON.stringify(currentContent));
+    window.location.href = "game.html"; // corrected filename
+  } else {
+    alert("Please select a content first.");
   }
+}
+
 </script>
 
 </body>
