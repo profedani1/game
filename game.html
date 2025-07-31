@@ -659,10 +659,8 @@ button.wrong {
 <script>
 const levels = ["choose", "sneak", "tunnel", "transit", "catch", "listen", "speak"];
 
-// Always fetch latest questions from localStorage
-function getQuestions() {
-  return JSON.parse(localStorage.getItem("questions")) || [];
-}
+const questions = JSON.parse(localStorage.getItem("questions"));
+
 
 let currentLevelIndex = 0;
 let currentQuestionIndex = 0;
@@ -671,26 +669,27 @@ let movingRectangles = [];
 let selectedListenButton = null;
 let speedMultiplier = 1; // Default speed
 let singleActivityMode = false; // Tracks if
-let currentActivity = "";
-
+let currentActivity = ""; 
 function playSingleActivity(activityName) {
   singleActivityMode = true;
   currentActivity = activityName;
   document.getElementById("level-container").style.display = "none";
-  document.getElementById("back-button").style.display = "block";
+  document.getElementById("back-button").style.display = "block"; // <== Show it
   currentQuestionIndex = 0;
   mistakes = false;
   showActivity(activityName);
 }
 
+
 function startLevel() {
   singleActivityMode = false;
-  currentActivity = levels[currentLevelIndex];
+  currentActivity = levels[currentLevelIndex]; // <-- Track current level
   document.getElementById("level-container").style.display = "none";
   currentQuestionIndex = 0;
   mistakes = false;
   showActivity(currentActivity);
 }
+
 
 function showActivity(activityName) {
   document.querySelectorAll(".activity").forEach(div => div.style.display = "none");
@@ -705,18 +704,22 @@ function showActivity(activityName) {
     document.getElementById("speed-controls").style.display = "none";
     loadChoose();
   }
-  else if (activityName === "sneak") {
-    isLevelMode = !singleActivityMode;
-    loadSneak();
-  }
+else if (activityName === "sneak") {
+  isLevelMode = !singleActivityMode;
+  loadSneak();
+}
+
+
+
   else if (activityName === "tunnel") {
     document.getElementById("speed-controls").style.display = "none";
     loadTunnel();
   }
   else if (activityName === "transit") {
-    document.getElementById("speed-controls").style.display = "none";
-    loadTransit();
-  }
+  document.getElementById("speed-controls").style.display = "none";
+  loadTransit();
+}
+
   else if (activityName === "catch") {
     document.getElementById("speed-controls").style.display = "block";
     loadCatch();
@@ -724,9 +727,10 @@ function showActivity(activityName) {
   else if (activityName === "listen") {
     document.getElementById("speed-controls").style.display = "none";
     loadListen();
+    
   }
-}
-
+} 
+ 
 function finishLevel(success) {
   document.getElementById("speed-controls").style.display = "none";
 
@@ -734,9 +738,10 @@ function finishLevel(success) {
     if (singleActivityMode) {
       showMessage("✅ Activity completed! Click to return to menu.", () => {
         singleActivityMode = false;
-        document.getElementById("level-container").style.display = "block";
-        document.getElementById("back-button").style.display = "none";
-        document.querySelectorAll(".activity").forEach(div => div.style.display = "none");
+    document.getElementById("level-container").style.display = "block";
+document.getElementById("back-button").style.display = "none"; // <== Hide it
+document.querySelectorAll(".activity").forEach(div => div.style.display = "none");
+
       });
     } else {
       currentLevelIndex++;
@@ -756,10 +761,11 @@ function finishLevel(success) {
     showMessage("⚠️ Mistakes detected! Click to retry.", () => {
       currentQuestionIndex = 0;
       mistakes = false;
-      showActivity(currentActivity);
+      showActivity(currentActivity); // <-- this fixes the retry issue
     });
   }
 }
+
 
 function loadChoose() {
   const q = questions[currentQuestionIndex];
