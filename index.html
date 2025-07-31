@@ -104,10 +104,11 @@
 
 
 <div id="buttons">
-  <button onclick="selectContent('time')">Time Prepositions</button>
-  <button onclick="selectContent('movement')">Movement Prepositions</button>
-  <button onclick="selectContent('cause')">Cause Prepositions</button>
-  <button onclick="selectContent('compare')">Comparison Prepositions</button>
+  <button onclick="selectContent('time')">Time </button>
+    <button onclick="selectContent('relativetime')">Relative Time</button>
+  <button onclick="selectContent('movement')">Movement </button>
+  <button onclick="selectContent('cause')">Cause </button>
+  <button onclick="selectContent('compare')">Comparison </button>
 </div>
 
 <button onclick="playGame()" id="playButton" disabled>PLAY</button>
@@ -118,8 +119,26 @@
   const contentTime = [
   
     { question: "since", translation: "desde" },
+    { question: "while", translation: "mientras" },
+{ question: "still", translation: "aún" },
+{ question: "yet", translation: "todavía" },
+{ question: "already", translation: "ya" },
+{ question: "soon", translation: "pronto" },
+{ question: "early", translation: "temprano" },
+{ question: "late", translation: "tarde" },
+{ question: "ever", translation: "alguna vez" },
+{ question: "never", translation: "nunca" },
+{ question: "then", translation: "entonces" },
+{ question: "once", translation: "una vez" },
+{ question: "nowadays", translation: "hoy en día"}
+  ];
+
+  const contentRelativetime = [
+{ question: "since then", translation: "desde entonces" },
     { question: "...ago", translation: "hace..." },
         { question: "right after", translation: "luego" },
+        { question: "meanwhile", translation: "mientras tanto" },
+
     { question: "all of a sudden", translation: "de repente" },
     { question: "before", translation: "antes" },
     { question: "after", translation: "después" },
@@ -127,6 +146,7 @@
     { question: "from", translation: "desde" },
     { question: "during", translation: "durante" }
   ];
+
 
   const contentMovement = [
     { question: "out", translation: "fuera" },
@@ -172,6 +192,7 @@
 
     switch(option) {
       case 'time': currentContent = contentTime; break;
+         case 'relativetime': currentContent = contentRelativetime; break;
       case 'movement': currentContent = contentMovement; break;
       case 'cause': currentContent = contentCause; break;
       case 'compare': currentContent = contentCompare; break;
