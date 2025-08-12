@@ -1,600 +1,237 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Terreno 3D con Bloom y Cámara Libre</title>
+<title>Language Game Menu</title>
 <style>
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; color: white; font-family: monospace; }
-  canvas { display: block; width: 100vw; height: 100vh; }
-  #info { position: fixed; top: 10px; left: 10px; z-index: 10; }
+  body {
+    background: #121212;
+    color: #00FFAA;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;    width: 100%;
+
+    height: 100vh;
+  }
+
+  /* Option buttons container: 2 columns, no vertical gap */
+  #buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0;
+    column-gap: 0.2em;
+    width: 90%;
+  }
+  #buttons button {
+    width: 100%;
+    font-size: 0.9em;
+    background: #00FFAA;
+    color: #121212;
+    border: none;
+    margin:0.2vh;
+        padding: 1em 0;
+
+    cursor: pointer;
+    border-bottom: 1px solid #0fbb88;
+  }
+  #buttons button:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+  #buttons button:hover {
+    background: #00CC88;
+  }
+  button:disabled {
+    background: #555;
+    cursor: not-allowed;
+    color: #ccc;
+  }
+  #playButton {
+    margin-top: 0.5em;
+    padding: 2vh 1vh;
+    border-radius: 100%;
+    border: none;
+    background: #00FFAA;
+    color: #121212;
+    font-size: 2vh;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #playButton:disabled {
+    background: #555;
+    cursor: not-allowed;
+    color: #ccc;
+  }
+  #playButton:hover:enabled {
+    background: #00CC88;
+  }
+
+  /* Word container: grid with two columns (English and Spanish buttons) */
+  #wordContainer {
+    width: 100%;
+    max-width: 700px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0;
+    background: #1f1f1f;
+    padding: 1em;
+    border-radius: 0.6em;
+    min-height: 200px;
+    user-select: none;
+  }
+
+  /* Each word is a button filling its grid cell */
+  .word-card {
+    background: #121212;
+    border: 1px solid #00FFAA;
+    color:#00FFAA;
+    border-radius: 0.5em;
+    padding: 0.5em 1.2em;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1.1em;
+    transition: background 0.2s, color 0.2s;
+    width: 100%;
+  }
+  .word-card:hover {
+    background: #00FFAA;
+    color: #121212;
+  }
 </style>
 </head>
 <body>
-<div id="info">
-  <p>WASD + QE para mover, mouse para mirar.</p>
-  <p>FPS: <span id="fps">0</span></p>
+
+
+<div id="buttons">
+  <button onclick="selectContent('time')">Time </button>
+    <button onclick="selectContent('relativetime')">Relative Time</button>
+  <button onclick="selectContent('movement')">Movement </button>
+  <button onclick="selectContent('cause')">Cause </button>
+  <button onclick="selectContent('compare')">Comparison </button>
 </div>
-<canvas id="glcanvas"></canvas>
+
+<button onclick="playGame()" id="playButton" disabled>PLAY</button>
+
+<div id="wordContainer" aria-live="polite" aria-label="Selected prepositions list"></div>
+
 <script>
-// Utilidades para shader
-function createShader(gl, type, source) {
-  const shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error('Shader compile failed:', gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    return null;
+  const contentTime = [
+
+    { question: "since", translation: "desde" },
+    { question: "while", translation: "mientras" },
+{ question: "still", translation: "aún" },
+{ question: "yet", translation: "todavía" },
+{ question: "already", translation: "ya" },
+{ question: "soon", translation: "pronto" },
+{ question: "early", translation: "temprano" },
+{ question: "late", translation: "tarde" },
+{ question: "ever", translation: "alguna vez" },
+{ question: "never", translation: "nunca" },
+{ question: "then", translation: "entonces" },
+{ question: "once", translation: "una vez" },
+{ question: "nowadays", translation: "hoy en día"}
+  ];
+
+  const contentRelativetime = [
+{ question: "since then", translation: "desde entonces" },
+    { question: "...ago", translation: "hace..." },
+        { question: "right after", translation: "luego" },
+        { question: "meanwhile", translation: "mientras tanto" },
+
+    { question: "all of a sudden", translation: "de repente" },
+    { question: "before", translation: "antes" },
+    { question: "after", translation: "después" },
+    { question: "until", translation: "hasta" },
+    { question: "from", translation: "desde" },
+    { question: "during", translation: "durante" }
+  ];
+
+
+  const contentMovement = [
+    { question: "out", translation: "fuera" },
+    { question: "towards", translation: "hacia" },
+    { question: "across", translation: "cruzando" },
+    { question: "along", translation: "a lo largo" },
+    { question: "under", translation: "debajo" },
+    { question: "beyond", translation: "más allá" },
+    { question: "around", translation: "alrededor" },
+    { question: "up", translation: "arriba" },
+    { question: "down", translation: "abajo" }
+  ];
+
+  const contentCause = [
+    { question: "due to", translation: "debido a" },
+    { question: "thanks to", translation: "gracias a" },
+    { question: "because of", translation: "debido a" },
+    { question: "of course", translation: "claro" },
+        { question: "therefore", translation: "por lo tanto" },
+    { question: "since", translation: "ya que" },
+    { question: "because of that", translation: "por eso" }
+  ];
+
+  const contentCompare = [
+    { question: "like / as", translation: "como" },
+    { question: "unlike", translation: "a diferencia de" },
+    { question: "than", translation: "que" },
+    { question: "with", translation: "con" },
+    { question: "without", translation: "sin" },
+    { question: "according to", translation: "según" },
+    { question: "in contrast to", translation: "en contraste" },
+    { question: "similar to", translation: "igual que" },
+
+    { question: "the opposite", translation: "lo opuesto" }
+  ];
+
+  let selected = null;
+  let currentContent = [];
+
+  function selectContent(option) {
+    const wordContainer = document.getElementById("wordContainer");
+    wordContainer.innerHTML = ""; // clear previous
+
+    switch(option) {
+      case 'time': currentContent = contentTime; break;
+         case 'relativetime': currentContent = contentRelativetime; break;
+      case 'movement': currentContent = contentMovement; break;
+      case 'cause': currentContent = contentCause; break;
+      case 'compare': currentContent = contentCompare; break;
+      default: currentContent = []; break;
+    }
+
+    selected = option;
+    document.getElementById("playButton").disabled = false;
+
+    // For each pair, create two buttons side by side: English then Spanish
+    currentContent.forEach(({question, translation}) => {
+      const enBtn = document.createElement("button");
+      enBtn.className = "word-card";
+      enBtn.textContent = question;
+      enBtn.title = "English";
+      enBtn.dataset.side = "question";
+
+      const esBtn = document.createElement("button");
+      esBtn.className = "word-card";
+      esBtn.textContent = translation;
+      esBtn.title = "Spanish";
+      esBtn.dataset.side = "translation";
+
+      // Append both buttons to the container
+      wordContainer.appendChild(enBtn);
+      wordContainer.appendChild(esBtn);
+    });
   }
-  return shader;
-}
-function createProgram(gl, vertexSrc, fragmentSrc) {
-  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSrc);
-  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
-  if(!vertexShader || !fragmentShader) return null;
-  const program = gl.createProgram();
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error('Program link failed:', gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-    return null;
-  }
-  return program;
-}
 
-// Vertex shader común (posiciones y UV)
-const vertexShaderSrc = `#version 300 es
-precision mediump float;
-in vec3 aPosition;
-in vec2 aUV;
-uniform mat4 uProjection;
-uniform mat4 uView;
-uniform mat4 uModel;
-out vec2 vUV;
-void main() {
-  vUV = aUV;
-  gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
-}
-`;
-
-// Fragment shader escena (terreno con altura y color)
-const fragmentSceneSrc = `#version 300 es
-precision mediump float;
-in vec2 vUV;
-out vec4 outColor;
-
-void main() {
-  // Color de terreno: degradado simple basado en UV
-  float h = vUV.y;
-  vec3 color = mix(vec3(0.0,0.2,0.0), vec3(0.6,0.8,0.4), h);
-  // Añadimos un brillo “volcánico” (simulado) en el centro del terreno:
-  float dist = distance(vUV, vec2(0.5,0.5));
-  if(dist < 0.1) {
-    color += vec3(1.5,0.4,0.1) * (0.1 - dist) * 10.0;
-  }
-  outColor = vec4(color,1.0);
-}
-`;
-
-// Fragment shader umbral brillo para bloom
-const fragmentThresholdSrc = `#version 300 es
-precision mediump float;
-in vec2 vUV;
-uniform sampler2D uTexture;
-out vec4 outColor;
-
-void main() {
-  vec3 color = texture(uTexture, vUV).rgb;
-  float brightness = max(max(color.r, color.g), color.b);
-  if(brightness > 0.8) {
-    outColor = vec4(color,1.0);
+ function playGame() {
+  if (selected && currentContent.length > 0) {
+    localStorage.setItem("questions", JSON.stringify(currentContent));
+    window.location.href = "game.html"; // corrected filename
   } else {
-    outColor = vec4(0.0);
+    alert("Please select a content first.");
   }
 }
-`;
-
-// Fragment shader blur horizontal
-const fragmentBlurH = `#version 300 es
-precision mediump float;
-in vec2 vUV;
-uniform sampler2D uTexture;
-uniform float uTexelSize;
-out vec4 outColor;
-
-void main() {
-  vec3 result = vec3(0.0);
-  result += texture(uTexture, vUV + vec2(-4.0*uTexelSize, 0)).rgb * 0.05;
-  result += texture(uTexture, vUV + vec2(-3.0*uTexelSize, 0)).rgb * 0.09;
-  result += texture(uTexture, vUV + vec2(-2.0*uTexelSize, 0)).rgb * 0.12;
-  result += texture(uTexture, vUV + vec2(-1.0*uTexelSize, 0)).rgb * 0.15;
-  result += texture(uTexture, vUV).rgb * 0.16;
-  result += texture(uTexture, vUV + vec2(1.0*uTexelSize, 0)).rgb * 0.15;
-  result += texture(uTexture, vUV + vec2(2.0*uTexelSize, 0)).rgb * 0.12;
-  result += texture(uTexture, vUV + vec2(3.0*uTexelSize, 0)).rgb * 0.09;
-  result += texture(uTexture, vUV + vec2(4.0*uTexelSize, 0)).rgb * 0.05;
-  outColor = vec4(result,1.0);
-}
-`;
-
-// Fragment shader blur vertical
-const fragmentBlurV = `#version 300 es
-precision mediump float;
-in vec2 vUV;
-uniform sampler2D uTexture;
-uniform float uTexelSize;
-out vec4 outColor;
-
-void main() {
-  vec3 result = vec3(0.0);
-  result += texture(uTexture, vUV + vec2(0, -4.0*uTexelSize)).rgb * 0.05;
-  result += texture(uTexture, vUV + vec2(0, -3.0*uTexelSize)).rgb * 0.09;
-  result += texture(uTexture, vUV + vec2(0, -2.0*uTexelSize)).rgb * 0.12;
-  result += texture(uTexture, vUV + vec2(0, -1.0*uTexelSize)).rgb * 0.15;
-  result += texture(uTexture, vUV).rgb * 0.16;
-  result += texture(uTexture, vUV + vec2(0, 1.0*uTexelSize)).rgb * 0.15;
-  result += texture(uTexture, vUV + vec2(0, 2.0*uTexelSize)).rgb * 0.12;
-  result += texture(uTexture, vUV + vec2(0, 3.0*uTexelSize)).rgb * 0.09;
-  result += texture(uTexture, vUV + vec2(0, 4.0*uTexelSize)).rgb * 0.05;
-  outColor = vec4(result,1.0);
-}
-`;
-
-// Fragment shader para componer escena + bloom
-const fragmentCombine = `#version 300 es
-precision mediump float;
-in vec2 vUV;
-uniform sampler2D uScene;
-uniform sampler2D uBloom;
-out vec4 outColor;
-
-void main() {
-  vec3 scene = texture(uScene, vUV).rgb;
-  vec3 bloom = texture(uBloom, vUV).rgb;
-  // Combinamos sumando bloom
-  outColor = vec4(scene + bloom, 1.0);
-}
-`;
-
-// === Setup WebGL ===
-const canvas = document.getElementById('glcanvas');
-const gl = canvas.getContext('webgl2');
-if(!gl) {
-  alert("Tu navegador no soporta WebGL2");
-  throw new Error("WebGL2 no soportado");
-}
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-gl.viewport(0,0,canvas.width, canvas.height);
-
-// Crear buffers para un terreno simple (plano subdividido)
-const gridSize = 64;
-const positions = [];
-const uvs = [];
-const indices = [];
-for(let y=0; y<=gridSize; y++) {
-  for(let x=0; x<=gridSize; x++) {
-    const u = x / gridSize;
-    const v = y / gridSize;
-    // Posición XZ, Y=0 (altura en shader)
-    positions.push(u - 0.5, 0, v - 0.5);
-    uvs.push(u, v);
-  }
-}
-for(let y=0; y<gridSize; y++) {
-  for(let x=0; x<gridSize; x++) {
-    const i = y*(gridSize+1) + x;
-    indices.push(i, i+1, i+gridSize+1);
-    indices.push(i+1, i+gridSize+2, i+gridSize+1);
-  }
-}
-
-function createBuffer(gl, data, target, usage = gl.STATIC_DRAW) {
-  const buffer = gl.createBuffer();
-  gl.bindBuffer(target, buffer);
-  gl.bufferData(target, data, usage);
-  return buffer;
-}
-
-// Crear buffers
-const positionBuffer = createBuffer(gl, new Float32Array(positions), gl.ARRAY_BUFFER);
-const uvBuffer = createBuffer(gl, new Float32Array(uvs), gl.ARRAY_BUFFER);
-const indexBuffer = createBuffer(gl, new Uint32Array(indices), gl.ELEMENT_ARRAY_BUFFER);
-
-// Crear programas
-const programScene = createProgram(gl, vertexShaderSrc, fragmentSceneSrc);
-const programThreshold = createProgram(gl, vertexShaderSrc, fragmentThresholdSrc);
-const programBlurH = createProgram(gl, vertexShaderSrc, fragmentBlurH);
-const programBlurV = createProgram(gl, vertexShaderSrc, fragmentBlurV);
-const programCombine = createProgram(gl, vertexShaderSrc, fragmentCombine);
-
-// Crear VAO para el terreno
-function createVAO(prog) {
-  const vao = gl.createVertexArray();
-  gl.bindVertexArray(vao);
-
-  const aPos = gl.getAttribLocation(prog, "aPosition");
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  gl.enableVertexAttribArray(aPos);
-  gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
-
-  const aUV = gl.getAttribLocation(prog, "aUV");
-  gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
-  gl.enableVertexAttribArray(aUV);
-  gl.vertexAttribPointer(aUV, 2, gl.FLOAT, false, 0, 0);
-
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-  gl.bindVertexArray(null);
-  return vao;
-}
-const vaoScene = createVAO(programScene);
-const vaoThreshold = createVAO(programThreshold);
-const vaoBlurH = createVAO(programBlurH);
-const vaoBlurV = createVAO(programBlurV);
-const vaoCombine = createVAO(programCombine);
-
-// Matrices
-function createIdentity() {
-  return new Float32Array([1,0,0,0,
-                           0,1,0,0,
-                           0,0,1,0,
-                           0,0,0,1]);
-}
-function multiplyMat4(a,b) {
-  const out = new Float32Array(16);
-  for(let i=0; i<4; i++) {
-    for(let j=0; j<4; j++) {
-      out[i*4+j] = 0;
-      for(let k=0; k<4; k++) {
-        out[i*4+j] += a[i*4+k]*b[k*4+j];
-      }
-    }
-  }
-  return out;
-}
-function perspective(fov, aspect, near, far) {
-  const f = 1/Math.tan(fov/2);
-  const nf = 1/(near - far);
-  const out = new Float32Array(16);
-  out[0] = f / aspect;
-  out[1] = 0;
-  out[2] = 0;
-  out[3] = 0;
-  out[4] = 0;
-  out[5] = f;
-  out[6] = 0;
-  out[7] = 0;
-  out[8] = 0;
-  out[9] = 0;
-  out[10] = (far + near) * nf;
-  out[11] = -1;
-  out[12] = 0;
-  out[13] = 0;
-  out[14] = (2 * far * near) * nf;
-  out[15] = 0;
-  return out;
-}
-function lookAt(eye, center, up) {
-  const f = normalize(subtract(center, eye));
-  const s = normalize(cross(f, up));
-  const u = cross(s, f);
-
-  const out = new Float32Array(16);
-  out[0] = s[0];
-  out[1] = u[0];
-  out[2] = -f[0];
-  out[3] = 0;
-  out[4] = s[1];
-  out[5] = u[1];
-  out[6] = -f[1];
-  out[7] = 0;
-  out[8] = s[2];
-  out[9] = u[2];
-  out[10] = -f[2];
-  out[11] = 0;
-  out[12] = -dot(s, eye);
-  out[13] = -dot(u, eye);
-  out[14] = dot(f, eye);
-  out[15] = 1;
-  return out;
-}
-function subtract(a,b) {
-  return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];
-}
-function cross(a,b) {
-  return [
-    a[1]*b[2]-a[2]*b[1],
-    a[2]*b[0]-a[0]*b[2],
-    a[0]*b[1]-a[1]*b[0]
-  ];
-}
-function dot(a,b) {
-  return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
-}
-function normalize(v) {
-  const len = Math.sqrt(dot(v,v));
-  if(len > 0) return [v[0]/len,v[1]/len,v[2]/len];
-  return v;
-}
-
-// Cámara libre (posicion + rotacion)
-const camera = {
-  pos: [0, 0.2, 1],
-  pitch: 0,
-  yaw: 0,
-  speed: 1.5,
-  sensitivity: 0.002
-};
-
-const keys = {};
-window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
-window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
-
-let pointerLocked = false;
-canvas.addEventListener('click', () => {
-  canvas.requestPointerLock();
-});
-document.addEventListener('pointerlockchange', () => {
-  pointerLocked = (document.pointerLockElement === canvas);
-});
-
-window.addEventListener('mousemove', e => {
-  if(!pointerLocked) return;
-  camera.yaw -= e.movementX * camera.sensitivity;
-  camera.pitch -= e.movementY * camera.sensitivity;
-  if(camera.pitch > Math.PI/2) camera.pitch = Math.PI/2;
-  if(camera.pitch < -Math.PI/2) camera.pitch = -Math.PI/2;
-});
-
-function updateCamera(dt) {
-  const forward = [
-    Math.cos(camera.pitch) * Math.sin(camera.yaw),
-    Math.sin(camera.pitch),
-    Math.cos(camera.pitch) * Math.cos(camera.yaw)
-  ];
-  const right = [
-    Math.sin(camera.yaw - Math.PI/2),
-    0,
-    Math.cos(camera.yaw - Math.PI/2)
-  ];
-  const up = [0,1,0];
-  let velocity = camera.speed * dt;
-
-  if(keys['w']) {
-    camera.pos[0] += forward[0]*velocity;
-    camera.pos[1] += forward[1]*velocity;
-    camera.pos[2] += forward[2]*velocity;
-  }
-  if(keys['s']) {
-    camera.pos[0] -= forward[0]*velocity;
-    camera.pos[1] -= forward[1]*velocity;
-    camera.pos[2] -= forward[2]*velocity;
-  }
-  if(keys['a']) {
-    camera.pos[0] -= right[0]*velocity;
-    camera.pos[2] -= right[2]*velocity;
-  }
-  if(keys['d']) {
-    camera.pos[0] += right[0]*velocity;
-    camera.pos[2] += right[2]*velocity;
-  }
-  if(keys['q']) {
-    camera.pos[1] += velocity;
-  }
-  if(keys['e']) {
-    camera.pos[1] -= velocity;
-  }
-}
-
-// --- Framebuffers para postproceso bloom ---
-function createFramebuffer(gl, w, h) {
-  const fbo = gl.createFramebuffer();
-  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-
-  // Depth renderbuffer
-  const rbo = gl.createRenderbuffer();
-  gl.bindRenderbuffer(gl.RENDERBUFFER, rbo);
-  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
-  gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rbo);
-
-  if(gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
-    console.error("Framebuffer incompleto");
-  }
-
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-  return {fbo, texture, rbo, width: w, height: h};
-}
-
-let sceneFBO = createFramebuffer(gl, canvas.width, canvas.height);
-let bloomFBO1 = createFramebuffer(gl, canvas.width/2|0, canvas.height/2|0);
-let bloomFBO2 = createFramebuffer(gl, canvas.width/2|0, canvas.height/2|0);
-
-// --- Dibuja el plano ---
-function drawPlane(program, vao, uniforms) {
-  gl.useProgram(program);
-  gl.bindVertexArray(vao);
-
-  // Set uniforms
-  for(const key in uniforms) {
-    const loc = gl.getUniformLocation(program, key);
-    if(loc === null) continue;
-    const v = uniforms[key];
-    if(typeof v === "number") {
-      gl.uniform1f(loc, v);
-    } else if(v.length === 16) {
-      gl.uniformMatrix4fv(loc, false, v);
-    } else if(v.length === 2) {
-      gl.uniform2fv(loc, v);
-    } else if(v.length === 3) {
-      gl.uniform3fv(loc, v);
-    } else if(typeof v === "boolean") {
-      gl.uniform1i(loc, v ? 1 : 0);
-    }
-  }
-
-  gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0);
-  gl.bindVertexArray(null);
-}
-
-// --- Dibuja quad fullscreen para postproceso ---
-const quadVBO = createBuffer(gl, new Float32Array([
-  -1,-1, 0,0,
-   1,-1, 1,0,
-  -1, 1, 0,1,
-   1, 1, 1,1,
-]), gl.ARRAY_BUFFER);
-
-const quadVAO = gl.createVertexArray();
-gl.bindVertexArray(quadVAO);
-gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
-const posLoc = 0;
-const uvLoc = 1;
-gl.enableVertexAttribArray(posLoc);
-gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 4*4, 0);
-gl.enableVertexAttribArray(uvLoc);
-gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 4*4, 2*4);
-gl.bindVertexArray(null);
-
-function drawFullscreenQuad(program, uniforms) {
-  gl.useProgram(program);
-  gl.bindVertexArray(quadVAO);
-
-  // Uniforms
-  for(const key in uniforms) {
-    const loc = gl.getUniformLocation(program, key);
-    if(loc === null) continue;
-    const v = uniforms[key];
-    if(typeof v === "number") {
-      gl.uniform1f(loc, v);
-    } else if(v.length === 16) {
-      gl.uniformMatrix4fv(loc, false, v);
-    } else if(v.length === 2) {
-      gl.uniform2fv(loc, v);
-    } else if(v.length === 3) {
-      gl.uniform3fv(loc, v);
-    } else if(typeof v === "boolean") {
-      gl.uniform1i(loc, v ? 1 : 0);
-    } else if(typeof v === "object" && v instanceof WebGLTexture) {
-      const texLoc = gl.getUniformLocation(program, key);
-      const unit = 0;
-      gl.activeTexture(gl.TEXTURE0 + unit);
-      gl.bindTexture(gl.TEXTURE_2D, v);
-      gl.uniform1i(texLoc, unit);
-    }
-  }
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  gl.bindVertexArray(null);
-}
-
-// --- Render loop ---
-let lastTime = 0;
-let frames = 0;
-let fpsDisplay = document.getElementById('fps');
-function render(t=0) {
-  const dt = (t - lastTime)/1000;
-  lastTime = t;
-  frames++;
-  if(t>1000) {
-    fpsDisplay.textContent = (frames/(t/1000)).toFixed(1);
-  }
-
-  updateCamera(dt);
-
-  // 1) Renderizar escena en framebuffer sceneFBO
-  gl.bindFramebuffer(gl.FRAMEBUFFER, sceneFBO.fbo);
-  gl.viewport(0,0,sceneFBO.width, sceneFBO.height);
-  gl.enable(gl.DEPTH_TEST);
-  gl.clearColor(0,0,0,1);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  // Matrices
-  const proj = perspective(Math.PI/4, canvas.width/canvas.height, 0.1, 100);
-  const eye = camera.pos;
-  // Mirar en dirección cámara:
-  const center = [
-    eye[0] + Math.cos(camera.pitch) * Math.sin(camera.yaw),
-    eye[1] + Math.sin(camera.pitch),
-    eye[2] + Math.cos(camera.pitch) * Math.cos(camera.yaw),
-  ];
-  const view = lookAt(eye, center, [0,1,0]);
-  const model = createIdentity();
-
-  drawPlane(programScene, vaoScene, {
-    uProjection: proj,
-    uView: view,
-    uModel: model
-  });
-
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-  // 2) Extraer brillo en bloomFBO1 (mitad resolución)
-  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO1.fbo);
-  gl.viewport(0,0,bloomFBO1.width, bloomFBO1.height);
-  gl.disable(gl.DEPTH_TEST);
-  gl.clearColor(0,0,0,1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, sceneFBO.texture);
-  drawFullscreenQuad(programThreshold, {
-    uTexture: sceneFBO.texture
-  });
-
-  // 3) Blur horizontal en bloomFBO2
-  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO2.fbo);
-  gl.viewport(0,0,bloomFBO2.width, bloomFBO2.height);
-  gl.clearColor(0,0,0,1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, bloomFBO1.texture);
-  drawFullscreenQuad(programBlurH, {
-    uTexture: bloomFBO1.texture,
-    uTexelSize: 1 / bloomFBO1.width
-  });
-
-  // 4) Blur vertical en bloomFBO1
-  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO1.fbo);
-  gl.viewport(0,0,bloomFBO1.width, bloomFBO1.height);
-  gl.clearColor(0,0,0,1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, bloomFBO2.texture);
-  drawFullscreenQuad(programBlurV, {
-    uTexture: bloomFBO2.texture,
-    uTexelSize: 1 / bloomFBO2.height
-  });
-
-  // 5) Combinar escena + bloom en pantalla
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  gl.viewport(0,0,canvas.width, canvas.height);
-  gl.clearColor(0,0,0,1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  drawFullscreenQuad(programCombine, {
-    uScene: sceneFBO.texture,
-    uBloom: bloomFBO1.texture
-  });
-
-  requestAnimationFrame(render);
-}
-
-requestAnimationFrame(render);
 
 </script>
+
 </body>
 </html>
