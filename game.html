@@ -1,1590 +1,600 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
- 
-  <title>Language Levels Game</title>
-  <style>
-    body {
-      background: #121212;
-      color: #00FFAA;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      overflow: hidden;
-    }
-    .microphone-icon {
-    color: red;
-    font-size: 5vh;
-    border-radius: 50%;
-    background-color: transparent;
-    border: 0.7vh solid #ff0000;
-    justify-content: space-between;
-    padding: 15% 30%;
-    transition: all 1s ease;
-}
-
-.microphone-icon:hover {
-    background-color: transparent;
-    text-shadow: 0 0 0.5vh #F03200, 0 0 0.5vh #F00032, 0 0 0.7vh darkred;
-    box-shadow: 0 0 1vh #F03200, 0 0 3vh #F00032, 0 0 5vh red;
-}
- #start-speak-btn {
-    background-color: transparent;
-  border: none;
-  border-radius: 50%;
-  padding: 16px;
-  width: 64px;
-  height: 64px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transition: all 0.2s ease-in-out;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#start-speak-btn:hover {
-  transform: scale(1.05);    background-color: darkred;
-
-}
-
-#start-speak-btn:active {
-  transform: scale(0.95);
-    background-color: transparent;
-}
-    #level-container {
-      margin-top: 5vh;
-    }
-    .activity {
-      display: none;
-      margin-top: 2vh;
-    }
-    button {
-      background: #00FFAA;
-      color: #121212;
-      border: none;
-      padding: 1vh 1vh;
-      font-size: 2vh;
-      font-weight: bold;
-      border-radius: 0.5vh;
-      cursor: pointer;
-      margin: 0.5vh;
-      text-transform: uppercase;
-    }
-    button:hover {
-      background: #00CC88;
-    }
-    .question {
-      font-size: 3vh;
-      margin-bottom: 1vh;
-      text-transform: uppercase;
-      color: #FFFFFF;
-    }
-    #catch-screen {
-      position: relative;
-      width: 95%;
-      height: 85vh;
-      margin: auto;
-      border: 0.2vh solid #00FF77;
-      overflow: hidden;
-    }
-     #tunnel-screen {
-      position: relative;
-      width: 95%;
-      height: 85vh;
-      margin: auto;
-      border: 0.2vh solid #FF77FF;
-      overflow: hidden;
-    }
-    #tunnel-screen {
-  position: relative;
-  overflow: hidden;
-}
-
-.tunnel-button {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  transition: transform 0.2s;
-}
-    .translation-button, .moving-button {
-      background: #1E1E1E;
-      color: #00FFAA;
-      border: 0.2vh solid #00FFAA;
-      font-size: 20vh;
-      text-transform: uppercase;
-      cursor: pointer;
-      position: absolute;
-      display: inline-block;
-      padding: 1vh 1vh;
-      min-width: fit-content;
-      white-space: nowrap;
-    }
-    .translation-button:hover, .moving-button:hover {
-      background: #00FFAA;
-      color: #121212;
-      border-color: #121212;
-    }
-    .moving-button.correct {
-      background-color: green;
-      color: white;
-    }
-    .moving-button.incorrect {
-      background-color: red;
-      color: white;
-    }
-    #speed-controls {
-      position: absolute;
-      bottom: 0.5vh;
-      right: 1vh;
-      z-index: 10;
-    }
-    /* Default translation button styles */
-.translation-button, .moving-button {
-  background: #1E1E1E;
-  color: #00FFAA;
-  border: 0.2vh solid #00FFAA;
-  font-size: 2vh;
-  text-transform: uppercase;
-  cursor: pointer;
-  position: absolute;
-  display: inline-block;
-  padding: 1vh 1vh;
-  min-width: fit-content;
-  white-space: nowrap;
-}
-
-/* Hover for default */
-.translation-button:hover, .moving-button:hover {
-  background: #00FFAA;
-  color: #121212;
-  border-color: #121212;
-}
-
-/* Specific styles for Choose activity */
-.choose-button {
-  background: #222244;
-  color: #FFD700;
-  border-color: #FFD700;
-}
-.choose-button:hover {
-  background: #FFD700;
-  color: #222244;
-}
-
-/* Specific styles for Tunnel activity */
-.tunnel-button {
-  background: #440044;
-  color: #FF77FF;
-  border-color: #FF77FF;
-}
-.tunnel-button:hover {
-  background: #FF77FF;
-  color: #440044;
-}
-
-/* Specific styles for Catch activity */
-.catch-button {
-  background: #004422;
-  color: #00FF77;
-  border-color: #00FF77;
-}
-.catch-button:hover {
-  background: #00FF77;
-  color: #004422;
-}
-
-/* Specific styles for Listen activity */
-.listen-button {
-  background: #333300;
-  color: #FFFF66;
-  border-color: #FFFF66;
-
-}
-.listen-button:hover {
-  background: #FFFF66;
-  color: #333300;
-}
-  #listen-confirm{
-  background: black;
-  color: #FFFF66;
-  height:5vh;
-    border-color: #FFFF66;
-
-}
- #listen-confirm:active {
-      background: #FFFF66;
-  color: black;
-}
-.moving-button.correct,
-.translation-button.correct {
-  background-color: green;
-  color: white;
-}
-.moving-button.incorrect,
-.translation-button.incorrect {
-  background-color: red;
-  color: white;
-}
-#choose-activity, #listen-activity {
-  display: flex;
-  flex-direction: column;
-  height: 85vh; /* already used elsewhere, match it */
-  padding: 2vh;
-  box-sizing: border-box;
-}
-
-/* Question stays at top */
-#choose-question, #listen-question {
-  margin-bottom: 2vh;
-  flex-shrink: 0;
-}
-
-/* Button container fills remaining space */
-#choose-buttons, #listen-buttons {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-evenly;
-  width: 100%;
-  height: 100%;
-  gap: 1vh;
-}
-.choose-button, .listen-button {
-  flex: 1 1 auto;
-  width: 100%;
-  font-size: 2.5vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1vh;
-  box-sizing: border-box;
-  min-height: 5vh;
-}
-
-#speak-activity {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3vh 2vw;
-  text-align: center;
-  border-color: #121212;
-
-}
-
-/* Question text */
-#speak-question {
-  font-size: 2em;
-  margin-bottom: 2vh;
-}
-
-/* Speak button */
-#speak-activity button {
-  padding: 1vh 2vw;
-  font-size: 1.2em;
-  border: none;
-  border-radius: 10px;
-  background-color:black;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-#speak-activity button:hover {
-}
-
-/* Result box */
-#speak-result {
-  margin-top: 3vh;
-  padding: 2vh 2vw;
-  font-size: 1.1em;
-  max-width: 80%;
-  background-color: black;
-  border-left: 5px solid white;
-  border-radius: 10px;
-  line-height: 1.6em;
-}
- .correct {
-    color: green;
-    font-weight: bold;
-    margin-right: 4px;
-  }
-  .incorrect {
-    color: orange;
-    font-weight: bold;
-    text-decoration: underline;
-    margin-right: 4px;
-  }
-  .expected {
-    color: gray;
-    font-style: italic;
-  }
-  .listening {
-    animation: pulse 1s infinite alternate;
-  }
-
-  @keyframes pulse {
-    from { background-color: #fff3cd; }
-    to { background-color: #ffeeba; }
-  }
-.result-box {
-  padding: 12px;
-  border-radius: 10px;
-  margin-top: 10px;
-}
-
-.correct-box {
-  background-color: #e6f9e6; /* Light green */
-  border: 1px solid #a6d8a8;
-}
-
-.incorrect-box {
-  background-color: #fff4e6; /* Light orange */
-  border: 1px solid #f5c6a5;
-}
-
-.correct {
-  color: green;
-  font-weight: bold;
-  margin-right: 4px;
-}
-
-.incorrect {
-  color: orange;
-  font-weight: bold;
-  text-decoration: underline;
-  margin-right: 4px;
-}
-  
-.expected {
-  color: #555;
-  font-style: italic;
-}
- 
-.listening {
-  animation: pulse 1s infinite alternate;
-}
- 
-@keyframes pulse {
-  from { background-color: #fff3cd; }
-  to { background-color: #ffeeba; }
-}
-#message-box {
-  cursor: pointer;
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.9);
-  text-align: center;
-  z-index: 999;
-  font-size: 3vh;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2vh;
-  box-sizing: border-box;
-}
-  #message-box {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0, 0, 0, 0.9);
-      color: white;
-      font-size: 3vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      display: none;
-      z-index: 1000;
-    }
-.dropdown {
-  border: 1px solid #ccc;
-  max-height: 200px;
-  overflow-y: auto;
-  background: black;
-  position: absolute;
-  z-index: 1000;
-  width: 100%;
-}
-
-.dropdown div {
-  padding: 8px;
-  cursor: pointer;
-}
-
-.dropdown div:hover {
-  background-color: cyan;
-color:black;
-}
-button[onclick="toggleCustomDropdown()"] {
-  background-color: #334;
-position:absolute;
-top:0vh;
-left:0vh;
-  color: #fff;
-  border: none;
-  padding: 1vh 1vw;
-  font-size: 1.7vh;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-button[onclick="toggleCustomDropdown()"]:hover {
-  background-color: #445;
-  transform: scale(1.05);
-}
-
-button[onclick="toggleCustomDropdown()"]:active {
-  background-color: #223;
-  transform: scale(0.98);
-}
-#back-button {
-  position: absolute;
-  top: 0.1vh;
-  right: 0.1vw;
-  background: #FF4444;
-  color: white;
-  font-size: 2vh;
-  padding: 1vh 2vh;
-  border: none;
-  border-radius: 1vh;
-  cursor: pointer;
-  z-index: 1000;
-}
-#back-button:hover {
-  background: #FF0000;
-}
-button.correct {
-  background-color: #003300;
-  color: #00FF00;
-}
-
-button.wrong {
-  background-color: #330000;
-  color: #FF4444;
-}
-.instruction-word {
-  background: black;
-  color: white;
-  border: 1px solid #00FFAA;
-  font-size: 2vh;
-  margin: 1vh;
-  padding: 1vh;
-  border-radius: 1vh;
-}
-.word-button {
-  background: #1E1E1E;
-  color: white;
-  border: 1px solid white;
-  padding: 1vh 2vh;
-  font-size: 2vh;
-  cursor: pointer;
-}
-.word-button.selected {
-  background-color: yellow;
-  color: black;
-}
-
-.word-button.matched {
-  background-color: green;
-}
-.word-button.wrong {
-  background-color: red;
-}
- #progress-indicator {
-      position: fixed;
-      top: 4.8vh;
-      left: 0vh;
-      display: flex;
-      z-index: 2000;
-
-    }
-    .progress-box {
-      width: 3vh;
-      height: 3vh;
-      border: 0.1vh solid white;
-      background-color: #121212;
-    }
-    .progress-box.filled {
-      background-color: green;
-    }
-    .lane-line {
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  background-color: transparent; /* Light line */
-  pointer-events: none;
-  z-index: 0; /* Behind buttons */
-}
- #match-screen {
-      position: relative;
-      width: 100vw;
-      height: 90vh;
-      overflow: hidden;
-      border: 0.1vh solid white;
-      box-sizing: border-box;
-      margin-top:8vh;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terreno 3D con Bloom y Cámara Libre</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; color: white; font-family: monospace; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  #info { position: fixed; top: 10px; left: 10px; z-index: 10; }
+</style>
 </head>
 <body>
-<button onclick="toggleCustomDropdown()">Choose Voice</button>
-<div id="customDropdown" class="dropdown" style="display: none;"></div>
-<button id="back-button" onclick="goBackToMenu()" style="display:none;">Back</button>
-
-
-
-<div id="level-container" style="width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center;">
-
-  <!-- Start Button -->
-  <button onclick="startLevel()" style="width: 100%; height: 30%; font-size: 1.5em;">Start</button>
-
-  <!-- Toggle Button -->
-  <button onclick="toggleActivities()" style="margin-top: 10px; width: 60%; height: 50px; font-size: 1.2em;">Choose Activity</button>
-
-<!-- Group Buttons -->
-<div style="display: flex; flex-direction: column; align-items: center; gap: 1vh; margin-top: 1vh;">
-  <button onclick="toggleGroup('training')">Training</button>
-  <button onclick="toggleGroup('arcade')">Arcade</button>
-  <button onclick="toggleGroup('voice')">Voice Recognition</button>
+<div id="info">
+  <p>WASD + QE para mover, mouse para mirar.</p>
+  <p>FPS: <span id="fps">0</span></p>
 </div>
-
-<!-- Grouped Activity Buttons -->
-<div id="training-buttons" class="activity-group" style="display: none; flex-direction: column; align-items: center; gap: 1vh; margin-top: 1vh;">
-  <button onclick="playSingleActivity('choose')" style="width: 100vw; height: 50px;">Play Choose</button>
-<button onclick="playSingleActivity('sneak')" style="width: 100vw; height: 50px;">Play Sneak</button>
-
-
-  <button onclick="playSingleActivity('listen')" style="width: 100vw; height: 50px;">Play Listen</button>
-</div>
-
-<div id="arcade-buttons" class="activity-group" style="display: none; flex-direction: column; align-items: center; gap: 1vh; margin-top: 1vh;">
-      <button onclick="playSingleActivity('catch')" style="width: 100vw; height: 50px;">Play Catch</button>
-  <button onclick="playSingleActivity('tunnel')" style="width: 100vw; height: 50px;">Play Tunnel</button>
-  <button onclick="playSingleActivity('transit')" style="width: 100vw; height: 50px;">Play Transit</button>
-</div>
-
-
-<div id="voice-buttons" class="activity-group" style="display: none; flex-direction: column; align-items: center; gap: 1vh; margin-top: 1vh;">
-  <button onclick="playSingleActivity('speak')" style="width: 100vw; height: 50px;">Play Speak</button>
-</div>
-
-</div>
-
-
-<div id="message-box" style="
-  display: none;
-  width: 100vw;
-  height: 100vh;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.8);
-  text-align: center;
-  line-height: 100vh; /* This centers the text vertically */
-  font-size: 3vh;
-">
-</div>
-
-
-
-  <!-- Speed Control Buttons (only visible in Catch activity) -->
-      <div id="speed-controls" style="display: none;">
-    <button id="normalSpeedBtn" onclick="resetSpeed()" style="display: none;">Normal</button>
-
-    <button onclick="makeSlower()">Slower</button>
-  </div>
-
-  <!-- Activity 1: Choose -->
-  <div id="choose-activity" class="activity">
-    <div class="question" id="choose-question"></div>
-    <div id="choose-buttons"></div>
-  </div>
-<div id="sneak-activity" class="activity">
-  <div class="question" id="instructions">Watch and repeat the sequence</div>
-  <div id="sneak" style="margin: 2vh auto;"></div>
-  <div id="sneak-buttons" style="margin-top: 2vh; display: flex; flex-wrap: wrap; justify-content: center; gap: 1vh;"></div>
-</div>
-<div id="sneak-activity" class="activity">
-  <div class="question" id="instructions">Watch and repeat the sequence</div>
-  <div id="sneak" style="margin: 2vh auto;"></div>
-  <div id="sneak-buttons" style="margin-top: 2vh; display: flex; flex-wrap: wrap; justify-content: center; gap: 1vh;"></div>
-</div>
-
-  <!-- Activity 2: Tunnel -->
-  <div id="tunnel-activity" class="activity">
-    <div class="question" id="tunnel-question">Question here</div>
-    <div id="tunnel-screen"></div>
-  </div>
-
-  <!-- Activity 3: Catch -->
-  <div id="catch-activity" class="activity">
-    <div class="question" id="catch-question"></div>
-    <div id="catch-screen"></div>
-  </div>
-
-  <!-- Activity 4: Listen -->
-  <div id="listen-activity" class="activity">
-    <div class="question" id="listen-question">Listen and choose the correct answer</div>
-    <div id="listen-buttons"></div>
-    <button id="listen-confirm" onclick="checkListenAnswer()">Confirm</button>
-  </div>
-<div id="speak-activity" class="activity" style="display:none;">
-  <h3 id="speak-question"></h3>
-  <button id="start-speak-btn" onclick="startSpeaking()"><i class="fas fa-microphone microphone-icon"></i></button>
-  <div id="speak-result" class="result-box"></div>
-   <button id="prev-btn" onclick="prevSpeakQuestion()">Previous</button>
-    <button id="next-btn" onclick="nextSpeakQuestion()">Next</button>
-</div>
- <!-- Activity: Transit -->
-<div id="transit-activity" class="activity">
-  <div id="progress-indicator"></div>
-  <div id="match-screen"></div>
-  <div id="message-box">🎉 All matches completed!</div>
-</div>
-
-
+<canvas id="glcanvas"></canvas>
 <script>
-const levels = ["choose", "sneak", "tunnel", "transit", "catch", "listen", "speak"];
-
-const questions = JSON.parse(localStorage.getItem("questions"));
-
-
-let currentLevelIndex = 0;
-let currentQuestionIndex = 0;
-let mistakes = false;
-let movingRectangles = [];
-let selectedListenButton = null;
-let speedMultiplier = 1; // Default speed
-let singleActivityMode = false; // Tracks if
-let currentActivity = ""; 
-function playSingleActivity(activityName) {
-  singleActivityMode = true;
-  currentActivity = activityName;
-  document.getElementById("level-container").style.display = "none";
-  document.getElementById("back-button").style.display = "block"; // <== Show it
-  currentQuestionIndex = 0;
-  mistakes = false;
-  showActivity(activityName);
+// Utilidades para shader
+function createShader(gl, type, source) {
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.error('Shader compile failed:', gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    return null;
+  }
+  return shader;
+}
+function createProgram(gl, vertexSrc, fragmentSrc) {
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSrc);
+  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSrc);
+  if(!vertexShader || !fragmentShader) return null;
+  const program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error('Program link failed:', gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+    return null;
+  }
+  return program;
 }
 
-
-function startLevel() {
-  singleActivityMode = false;
-  currentActivity = levels[currentLevelIndex]; // <-- Track current level
-  document.getElementById("level-container").style.display = "none";
-  currentQuestionIndex = 0;
-  mistakes = false;
-  showActivity(currentActivity);
+// Vertex shader común (posiciones y UV)
+const vertexShaderSrc = `#version 300 es
+precision mediump float;
+in vec3 aPosition;
+in vec2 aUV;
+uniform mat4 uProjection;
+uniform mat4 uView;
+uniform mat4 uModel;
+out vec2 vUV;
+void main() {
+  vUV = aUV;
+  gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
 }
+`;
 
+// Fragment shader escena (terreno con altura y color)
+const fragmentSceneSrc = `#version 300 es
+precision mediump float;
+in vec2 vUV;
+out vec4 outColor;
 
-function showActivity(activityName) {
-  document.querySelectorAll(".activity").forEach(div => div.style.display = "none");
-  const activityDiv = document.getElementById(`${activityName}-activity`);
-  if (!activityDiv) {
-    console.error(`No element found for activity: ${activityName}-activity`);
-    return;
+void main() {
+  // Color de terreno: degradado simple basado en UV
+  float h = vUV.y;
+  vec3 color = mix(vec3(0.0,0.2,0.0), vec3(0.6,0.8,0.4), h);
+  // Añadimos un brillo “volcánico” (simulado) en el centro del terreno:
+  float dist = distance(vUV, vec2(0.5,0.5));
+  if(dist < 0.1) {
+    color += vec3(1.5,0.4,0.1) * (0.1 - dist) * 10.0;
   }
-  activityDiv.style.display = "block";
-
-  if (activityName === "choose") {
-    document.getElementById("speed-controls").style.display = "none";
-    loadChoose();
-  }
-else if (activityName === "sneak") {
-  isLevelMode = !singleActivityMode;
-  loadSneak();
+  outColor = vec4(color,1.0);
 }
+`;
 
+// Fragment shader umbral brillo para bloom
+const fragmentThresholdSrc = `#version 300 es
+precision mediump float;
+in vec2 vUV;
+uniform sampler2D uTexture;
+out vec4 outColor;
 
-
-  else if (activityName === "tunnel") {
-    document.getElementById("speed-controls").style.display = "none";
-    loadTunnel();
-  }
-  else if (activityName === "transit") {
-  document.getElementById("speed-controls").style.display = "none";
-  loadTransit();
-}
-
-  else if (activityName === "catch") {
-    document.getElementById("speed-controls").style.display = "block";
-    loadCatch();
-  }
-  else if (activityName === "listen") {
-    document.getElementById("speed-controls").style.display = "none";
-    loadListen();
-    
-  }
-} 
- 
-function finishLevel(success) {
-  document.getElementById("speed-controls").style.display = "none";
-
-  if (success && !mistakes) {
-    if (singleActivityMode) {
-      showMessage("✅ Activity completed! Click to return to menu.", () => {
-        singleActivityMode = false;
-    document.getElementById("level-container").style.display = "block";
-document.getElementById("back-button").style.display = "none"; // <== Hide it
-document.querySelectorAll(".activity").forEach(div => div.style.display = "none");
-
-      });
-    } else {
-      currentLevelIndex++;
-      if (currentLevelIndex >= levels.length) {
-        showMessage("🎉 Congratulations! You've finished all levels! Click to restart.", () => {
-          currentLevelIndex = 0;
-          document.getElementById("level-container").style.display = "block";
-          document.querySelectorAll(".activity").forEach(div => div.style.display = "none");
-        });
-      } else {
-        showMessage("✅ Level completed! Click to continue.", () => {
-          startLevel();
-        });
-      }
-    }
+void main() {
+  vec3 color = texture(uTexture, vUV).rgb;
+  float brightness = max(max(color.r, color.g), color.b);
+  if(brightness > 0.8) {
+    outColor = vec4(color,1.0);
   } else {
-    showMessage("⚠️ Mistakes detected! Click to retry.", () => {
-      currentQuestionIndex = 0;
-      mistakes = false;
-      showActivity(currentActivity); // <-- this fixes the retry issue
-    });
+    outColor = vec4(0.0);
+  }
+}
+`;
+
+// Fragment shader blur horizontal
+const fragmentBlurH = `#version 300 es
+precision mediump float;
+in vec2 vUV;
+uniform sampler2D uTexture;
+uniform float uTexelSize;
+out vec4 outColor;
+
+void main() {
+  vec3 result = vec3(0.0);
+  result += texture(uTexture, vUV + vec2(-4.0*uTexelSize, 0)).rgb * 0.05;
+  result += texture(uTexture, vUV + vec2(-3.0*uTexelSize, 0)).rgb * 0.09;
+  result += texture(uTexture, vUV + vec2(-2.0*uTexelSize, 0)).rgb * 0.12;
+  result += texture(uTexture, vUV + vec2(-1.0*uTexelSize, 0)).rgb * 0.15;
+  result += texture(uTexture, vUV).rgb * 0.16;
+  result += texture(uTexture, vUV + vec2(1.0*uTexelSize, 0)).rgb * 0.15;
+  result += texture(uTexture, vUV + vec2(2.0*uTexelSize, 0)).rgb * 0.12;
+  result += texture(uTexture, vUV + vec2(3.0*uTexelSize, 0)).rgb * 0.09;
+  result += texture(uTexture, vUV + vec2(4.0*uTexelSize, 0)).rgb * 0.05;
+  outColor = vec4(result,1.0);
+}
+`;
+
+// Fragment shader blur vertical
+const fragmentBlurV = `#version 300 es
+precision mediump float;
+in vec2 vUV;
+uniform sampler2D uTexture;
+uniform float uTexelSize;
+out vec4 outColor;
+
+void main() {
+  vec3 result = vec3(0.0);
+  result += texture(uTexture, vUV + vec2(0, -4.0*uTexelSize)).rgb * 0.05;
+  result += texture(uTexture, vUV + vec2(0, -3.0*uTexelSize)).rgb * 0.09;
+  result += texture(uTexture, vUV + vec2(0, -2.0*uTexelSize)).rgb * 0.12;
+  result += texture(uTexture, vUV + vec2(0, -1.0*uTexelSize)).rgb * 0.15;
+  result += texture(uTexture, vUV).rgb * 0.16;
+  result += texture(uTexture, vUV + vec2(0, 1.0*uTexelSize)).rgb * 0.15;
+  result += texture(uTexture, vUV + vec2(0, 2.0*uTexelSize)).rgb * 0.12;
+  result += texture(uTexture, vUV + vec2(0, 3.0*uTexelSize)).rgb * 0.09;
+  result += texture(uTexture, vUV + vec2(0, 4.0*uTexelSize)).rgb * 0.05;
+  outColor = vec4(result,1.0);
+}
+`;
+
+// Fragment shader para componer escena + bloom
+const fragmentCombine = `#version 300 es
+precision mediump float;
+in vec2 vUV;
+uniform sampler2D uScene;
+uniform sampler2D uBloom;
+out vec4 outColor;
+
+void main() {
+  vec3 scene = texture(uScene, vUV).rgb;
+  vec3 bloom = texture(uBloom, vUV).rgb;
+  // Combinamos sumando bloom
+  outColor = vec4(scene + bloom, 1.0);
+}
+`;
+
+// === Setup WebGL ===
+const canvas = document.getElementById('glcanvas');
+const gl = canvas.getContext('webgl2');
+if(!gl) {
+  alert("Tu navegador no soporta WebGL2");
+  throw new Error("WebGL2 no soportado");
+}
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+gl.viewport(0,0,canvas.width, canvas.height);
+
+// Crear buffers para un terreno simple (plano subdividido)
+const gridSize = 64;
+const positions = [];
+const uvs = [];
+const indices = [];
+for(let y=0; y<=gridSize; y++) {
+  for(let x=0; x<=gridSize; x++) {
+    const u = x / gridSize;
+    const v = y / gridSize;
+    // Posición XZ, Y=0 (altura en shader)
+    positions.push(u - 0.5, 0, v - 0.5);
+    uvs.push(u, v);
+  }
+}
+for(let y=0; y<gridSize; y++) {
+  for(let x=0; x<gridSize; x++) {
+    const i = y*(gridSize+1) + x;
+    indices.push(i, i+1, i+gridSize+1);
+    indices.push(i+1, i+gridSize+2, i+gridSize+1);
   }
 }
 
+function createBuffer(gl, data, target, usage = gl.STATIC_DRAW) {
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(target, buffer);
+  gl.bufferData(target, data, usage);
+  return buffer;
+}
 
-function loadChoose() {
-  const q = questions[currentQuestionIndex];
-  document.getElementById("choose-question").innerText = q.question;
-  const container = document.getElementById("choose-buttons");
-  container.innerHTML = "";
+// Crear buffers
+const positionBuffer = createBuffer(gl, new Float32Array(positions), gl.ARRAY_BUFFER);
+const uvBuffer = createBuffer(gl, new Float32Array(uvs), gl.ARRAY_BUFFER);
+const indexBuffer = createBuffer(gl, new Uint32Array(indices), gl.ELEMENT_ARRAY_BUFFER);
 
-  const options = shuffle([...questions.map(q => q.translation)]);
-  options.forEach(opt => {
-    const btn = document.createElement("button");
-    btn.className = "translation-button choose-button";
-    btn.innerText = opt;
-    btn.style.position = "static";
-    btn.onclick = () => {
-      if (opt === q.translation) {
-        btn.classList.add("correct");
+// Crear programas
+const programScene = createProgram(gl, vertexShaderSrc, fragmentSceneSrc);
+const programThreshold = createProgram(gl, vertexShaderSrc, fragmentThresholdSrc);
+const programBlurH = createProgram(gl, vertexShaderSrc, fragmentBlurH);
+const programBlurV = createProgram(gl, vertexShaderSrc, fragmentBlurV);
+const programCombine = createProgram(gl, vertexShaderSrc, fragmentCombine);
 
-        // ✅ Speak correct answer
-        const utterance = new SpeechSynthesisUtterance(opt);
-        if (selectedVoice) utterance.voice = selectedVoice;
-        speechSynthesis.speak(utterance);
+// Crear VAO para el terreno
+function createVAO(prog) {
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
 
-        setTimeout(() => nextChooseQuestion(), 1000);
-      } else {
-        btn.classList.add("incorrect");
-        mistakes = true;
+  const aPos = gl.getAttribLocation(prog, "aPosition");
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
+
+  const aUV = gl.getAttribLocation(prog, "aUV");
+  gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
+  gl.enableVertexAttribArray(aUV);
+  gl.vertexAttribPointer(aUV, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+  gl.bindVertexArray(null);
+  return vao;
+}
+const vaoScene = createVAO(programScene);
+const vaoThreshold = createVAO(programThreshold);
+const vaoBlurH = createVAO(programBlurH);
+const vaoBlurV = createVAO(programBlurV);
+const vaoCombine = createVAO(programCombine);
+
+// Matrices
+function createIdentity() {
+  return new Float32Array([1,0,0,0,
+                           0,1,0,0,
+                           0,0,1,0,
+                           0,0,0,1]);
+}
+function multiplyMat4(a,b) {
+  const out = new Float32Array(16);
+  for(let i=0; i<4; i++) {
+    for(let j=0; j<4; j++) {
+      out[i*4+j] = 0;
+      for(let k=0; k<4; k++) {
+        out[i*4+j] += a[i*4+k]*b[k*4+j];
       }
-    };
-    container.appendChild(btn);
-  });
-}
-
-function nextChooseQuestion() {
-  currentQuestionIndex++;
-  if (currentQuestionIndex < questions.length) {
-    loadChoose();
-  } else {
-    finishLevel(!mistakes);
-  }
-}
-function playSneakFromMenu() {
-  isLevelMode = false;
-  loadSneak();
-}
-
-let isLevelMode = false; // Must be global and updated depending on how activity is started
-
-function loadSneak() {
-  const sneakButtonsDiv = document.getElementById('sneak-buttons');
-  const sneakDiv = document.getElementById('sneak');
-
-  const q2t = new Map(questions.map(q => [q.question, q.translation]));
-  const allQuestions = [...new Set(questions.map(q => q.question))];
-
-  function generateInstructions(count) {
-    const instructions = [];
-    let pool = [];
-
-    while (instructions.length < count) {
-      if (pool.length < 4) pool = shuffle([...allQuestions]);
-      instructions.push(pool.splice(0, 4));
-    }
-    return instructions;
-  }
-
-  const instructions = generateInstructions(10);
-  let instructionIndex = 0;
-  let selectedStep = 0;
-  let selectedWords = [];
-  let expectedTranslations = [];
-  let mistakes = 0;
-
-  showSneakInstruction();
-
-  function showSneakInstruction() {
-    const currentWords = instructions[instructionIndex];
-
-    expectedTranslations = currentWords.map(w =>
-      (q2t.get(w) || "").trim().toLowerCase()
-    );
-
-    selectedStep = 0;
-    selectedWords = [];
-
-    sneakDiv.innerHTML = "";
-    document.querySelectorAll('#sneak-buttons button').forEach(btn => {
-      btn.classList.remove('selected', 'correct', 'wrong');
-      btn.style.border = "";
-    });
-
-    displayInstruction(currentWords);
-    renderSneakButtons();
-  }
-
-  function displayInstruction(words) {
-    sneakDiv.innerHTML = '';
-    words.forEach((word, i) => {
-      setTimeout(() => {
-        const textarea = document.createElement('textarea');
-        textarea.value = word;
-        textarea.rows = 1;
-        textarea.classList.add('instruction-word');
-        textarea.readOnly = true;
-        sneakDiv.appendChild(textarea);
-
-        if (i === words.length - 1) {
-          setTimeout(() => {
-            sneakDiv.innerHTML = '';
-          }, 2000);
-        }
-      }, i * 2000);
-    });
-  }
-
-  function renderSneakButtons() {
-    sneakButtonsDiv.innerHTML = '';
-    const allTranslations = [...new Set(questions.map(q => q.translation))];
-    const shuffled = shuffle([...allTranslations]);
-
-    shuffled.forEach(word => {
-      const btn = document.createElement('button');
-      btn.className = "translation-button choose-button";
-      btn.innerText = word;
-      btn.style.position = "static";
-      btn.onclick = () => selectSneakButton(btn);
-      sneakButtonsDiv.appendChild(btn);
-    });
-  }
-
-  function selectSneakButton(button) {
-    const selectedText = button.innerText.trim().toLowerCase();
-    const expected = expectedTranslations[selectedStep];
-
-    if (selectedText === expected) {
-      button.classList.add('selected', 'correct');
-      button.style.border = '3px solid lime';
-      selectedWords.push(button.innerText);
-      selectedStep++;
-
-      if (selectedStep === expectedTranslations.length) {
-        playSelectedWords();
-        setTimeout(() => {
-          instructionIndex++;
-
-          if (isLevelMode) {
-            // ✅ SEQUENCE MODE: end activity after 1 instruction set
-            finishLevel(mistakes === 0);
-          } else {
-            // ✅ STANDALONE MODE: keep going forever
-            if (instructionIndex >= instructions.length) {
-              instructionIndex = 0;
-            }
-            showSneakInstruction();
-          }
-        }, 2000);
-      }
-    } else {
-      button.classList.add('wrong');
-      button.style.border = '3px solid red';
-      mistakes++;
-      readTextAloud(button.innerText);
-
-      setTimeout(() => {
-        if (isLevelMode) {
-          finishLevel(false); // ❌ wrong = restart level
-        } else {
-          showSneakInstruction(); // 🔁 retry same instruction
-        }
-      }, 1500);
     }
   }
-
-  function playSelectedWords() {
-    const phrase = selectedWords.join('... ');
-    const utterance = new SpeechSynthesisUtterance(phrase);
-    utterance.lang = 'es-ES';
-    if (typeof selectedVoice !== 'undefined' && selectedVoice) {
-      utterance.voice = selectedVoice;
-    }
-    speechSynthesis.speak(utterance);
-  }
+  return out;
 }
+function perspective(fov, aspect, near, far) {
+  const f = 1/Math.tan(fov/2);
+  const nf = 1/(near - far);
+  const out = new Float32Array(16);
+  out[0] = f / aspect;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = f;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  out[9] = 0;
+  out[10] = (far + near) * nf;
+  out[11] = -1;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = (2 * far * near) * nf;
+  out[15] = 0;
+  return out;
+}
+function lookAt(eye, center, up) {
+  const f = normalize(subtract(center, eye));
+  const s = normalize(cross(f, up));
+  const u = cross(s, f);
 
-// -----------------
-// Activity: Tunnel
-// -----------------
-function loadTunnel() {
-  const q = questions[currentQuestionIndex];
-  document.getElementById("tunnel-question").innerText = q.question;
-  const screen = document.getElementById("tunnel-screen");
-  screen.innerHTML = "";
-
-  let correctAnswered = false;
-  let mistakes = false;
-
-  const angles = [
-    { x: 0, y: -1 }, { x: 0.707, y: -0.707 }, { x: 1, y: 0 }, { x: 0.707, y: 0.707 },
-    { x: 0, y: 1 }, { x: -0.707, y: 0.707 }, { x: -1, y: 0 }, { x: -0.707, y: -0.707 }
+  const out = new Float32Array(16);
+  out[0] = s[0];
+  out[1] = u[0];
+  out[2] = -f[0];
+  out[3] = 0;
+  out[4] = s[1];
+  out[5] = u[1];
+  out[6] = -f[1];
+  out[7] = 0;
+  out[8] = s[2];
+  out[9] = u[2];
+  out[10] = -f[2];
+  out[11] = 0;
+  out[12] = -dot(s, eye);
+  out[13] = -dot(u, eye);
+  out[14] = dot(f, eye);
+  out[15] = 1;
+  return out;
+}
+function subtract(a,b) {
+  return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+}
+function cross(a,b) {
+  return [
+    a[1]*b[2]-a[2]*b[1],
+    a[2]*b[0]-a[0]*b[2],
+    a[0]*b[1]-a[1]*b[0]
   ];
+}
+function dot(a,b) {
+  return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+}
+function normalize(v) {
+  const len = Math.sqrt(dot(v,v));
+  if(len > 0) return [v[0]/len,v[1]/len,v[2]/len];
+  return v;
+}
 
-  const usedAngles = [];
-  const recentTranslations = [];
+// Cámara libre (posicion + rotacion)
+const camera = {
+  pos: [0, 0.2, 1],
+  pitch: 0,
+  yaw: 0,
+  speed: 1.5,
+  sensitivity: 0.002
+};
 
-  function getUniqueRandomTranslation() {
-    const allTranslations = questions.map(q => q.translation);
-    const available = allTranslations.filter(t => !recentTranslations.includes(t));
-    const selected = available.length > 0
-      ? available[Math.floor(Math.random() * available.length)]
-      : allTranslations[Math.floor(Math.random() * allTranslations.length)];
+const keys = {};
+window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 
-    recentTranslations.push(selected);
-    if (recentTranslations.length > 5) recentTranslations.shift();
-    return selected;
+let pointerLocked = false;
+canvas.addEventListener('click', () => {
+  canvas.requestPointerLock();
+});
+document.addEventListener('pointerlockchange', () => {
+  pointerLocked = (document.pointerLockElement === canvas);
+});
+
+window.addEventListener('mousemove', e => {
+  if(!pointerLocked) return;
+  camera.yaw -= e.movementX * camera.sensitivity;
+  camera.pitch -= e.movementY * camera.sensitivity;
+  if(camera.pitch > Math.PI/2) camera.pitch = Math.PI/2;
+  if(camera.pitch < -Math.PI/2) camera.pitch = -Math.PI/2;
+});
+
+function updateCamera(dt) {
+  const forward = [
+    Math.cos(camera.pitch) * Math.sin(camera.yaw),
+    Math.sin(camera.pitch),
+    Math.cos(camera.pitch) * Math.cos(camera.yaw)
+  ];
+  const right = [
+    Math.sin(camera.yaw - Math.PI/2),
+    0,
+    Math.cos(camera.yaw - Math.PI/2)
+  ];
+  const up = [0,1,0];
+  let velocity = camera.speed * dt;
+
+  if(keys['w']) {
+    camera.pos[0] += forward[0]*velocity;
+    camera.pos[1] += forward[1]*velocity;
+    camera.pos[2] += forward[2]*velocity;
+  }
+  if(keys['s']) {
+    camera.pos[0] -= forward[0]*velocity;
+    camera.pos[1] -= forward[1]*velocity;
+    camera.pos[2] -= forward[2]*velocity;
+  }
+  if(keys['a']) {
+    camera.pos[0] -= right[0]*velocity;
+    camera.pos[2] -= right[2]*velocity;
+  }
+  if(keys['d']) {
+    camera.pos[0] += right[0]*velocity;
+    camera.pos[2] += right[2]*velocity;
+  }
+  if(keys['q']) {
+    camera.pos[1] += velocity;
+  }
+  if(keys['e']) {
+    camera.pos[1] -= velocity;
+  }
+}
+
+// --- Framebuffers para postproceso bloom ---
+function createFramebuffer(gl, w, h) {
+  const fbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+
+  // Depth renderbuffer
+  const rbo = gl.createRenderbuffer();
+  gl.bindRenderbuffer(gl.RENDERBUFFER, rbo);
+  gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
+  gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rbo);
+
+  if(gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+    console.error("Framebuffer incompleto");
   }
 
-  function spawnButton() {
-    if (correctAnswered) return;
- 
-    const opt = getUniqueRandomTranslation();
-    const btn = document.createElement("button");
-    btn.className = "moving-button tunnel-button";
-    btn.innerText = opt;
-    screen.appendChild(btn);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    const startX = screen.offsetWidth / 2;
-    const startY = screen.offsetHeight / 2;
+  return {fbo, texture, rbo, width: w, height: h};
+}
 
-    let angle, attempts = 0;
-    do {
-      angle = angles[Math.floor(Math.random() * angles.length)];
-      attempts++;
-    } while (
-      usedAngles.some(a => Math.abs(a.x - angle.x) < 0.2 && Math.abs(a.y - angle.y) < 0.2) &&
-      attempts < 10
-    );
+let sceneFBO = createFramebuffer(gl, canvas.width, canvas.height);
+let bloomFBO1 = createFramebuffer(gl, canvas.width/2|0, canvas.height/2|0);
+let bloomFBO2 = createFramebuffer(gl, canvas.width/2|0, canvas.height/2|0);
 
-    usedAngles.push(angle);
-    if (usedAngles.length > 4) usedAngles.shift();
+// --- Dibuja el plano ---
+function drawPlane(program, vao, uniforms) {
+  gl.useProgram(program);
+  gl.bindVertexArray(vao);
 
-    const maxDistance = Math.max(screen.offsetWidth, screen.offsetHeight);
-    const targetX = startX + angle.x * maxDistance;
-    const targetY = startY + angle.y * maxDistance;
-
-    let progress = 0;
-    const speed = 0.001;
-
-    function move() {
-      progress += speed;
-      btn.style.left = `${startX + (targetX - startX) * progress}px`;
-      btn.style.top = `${startY + (targetY - startY) * progress}px`;
-      btn.style.fontSize = `${4 + 30 * Math.pow(progress, 1.2)}px`;
-
-      if (progress < 1 && !correctAnswered) {
-        requestAnimationFrame(move);
-      } else {
-        btn.remove();
-      }
+  // Set uniforms
+  for(const key in uniforms) {
+    const loc = gl.getUniformLocation(program, key);
+    if(loc === null) continue;
+    const v = uniforms[key];
+    if(typeof v === "number") {
+      gl.uniform1f(loc, v);
+    } else if(v.length === 16) {
+      gl.uniformMatrix4fv(loc, false, v);
+    } else if(v.length === 2) {
+      gl.uniform2fv(loc, v);
+    } else if(v.length === 3) {
+      gl.uniform3fv(loc, v);
+    } else if(typeof v === "boolean") {
+      gl.uniform1i(loc, v ? 1 : 0);
     }
-
-    btn.onclick = () => {
-      if (opt === q.translation) {
-        btn.classList.add("correct");
-
-        // ✅ Speak correct answer
-        const utterance = new SpeechSynthesisUtterance(opt);
-        if (selectedVoice) utterance.voice = selectedVoice;
-        speechSynthesis.speak(utterance);
-
-        correctAnswered = true;
-        setTimeout(() => nextTunnelQuestion(), 1000);
-      } else {
-        btn.classList.add("incorrect");
-        mistakes = true;
-      }
-    };
-
-    move();
   }
 
-  const spawnInterval = setInterval(() => {
-    if (correctAnswered) {
-      clearInterval(spawnInterval);
-    } else {
-      spawnButton();
+  gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_INT, 0);
+  gl.bindVertexArray(null);
+}
+
+// --- Dibuja quad fullscreen para postproceso ---
+const quadVBO = createBuffer(gl, new Float32Array([
+  -1,-1, 0,0,
+   1,-1, 1,0,
+  -1, 1, 0,1,
+   1, 1, 1,1,
+]), gl.ARRAY_BUFFER);
+
+const quadVAO = gl.createVertexArray();
+gl.bindVertexArray(quadVAO);
+gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+const posLoc = 0;
+const uvLoc = 1;
+gl.enableVertexAttribArray(posLoc);
+gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 4*4, 0);
+gl.enableVertexAttribArray(uvLoc);
+gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 4*4, 2*4);
+gl.bindVertexArray(null);
+
+function drawFullscreenQuad(program, uniforms) {
+  gl.useProgram(program);
+  gl.bindVertexArray(quadVAO);
+
+  // Uniforms
+  for(const key in uniforms) {
+    const loc = gl.getUniformLocation(program, key);
+    if(loc === null) continue;
+    const v = uniforms[key];
+    if(typeof v === "number") {
+      gl.uniform1f(loc, v);
+    } else if(v.length === 16) {
+      gl.uniformMatrix4fv(loc, false, v);
+    } else if(v.length === 2) {
+      gl.uniform2fv(loc, v);
+    } else if(v.length === 3) {
+      gl.uniform3fv(loc, v);
+    } else if(typeof v === "boolean") {
+      gl.uniform1i(loc, v ? 1 : 0);
+    } else if(typeof v === "object" && v instanceof WebGLTexture) {
+      const texLoc = gl.getUniformLocation(program, key);
+      const unit = 0;
+      gl.activeTexture(gl.TEXTURE0 + unit);
+      gl.bindTexture(gl.TEXTURE_2D, v);
+      gl.uniform1i(texLoc, unit);
     }
-  }, 800);
-}
-
-function nextTunnelQuestion() {
-  currentQuestionIndex++;
-  if (currentQuestionIndex < questions.length) {
-    loadTunnel();
-  } else {
-    finishLevel(!mistakes);
   }
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  gl.bindVertexArray(null);
 }
 
-function loadTransit() {
-  const matchScreen = document.getElementById('match-screen');
-  const messageBox = document.getElementById('message-box');
-  const progressIndicator = document.getElementById('progress-indicator');
+// --- Render loop ---
+let lastTime = 0;
+let frames = 0;
+let fpsDisplay = document.getElementById('fps');
+function render(t=0) {
+  const dt = (t - lastTime)/1000;
+  lastTime = t;
+  frames++;
+  if(t>1000) {
+    fpsDisplay.textContent = (frames/(t/1000)).toFixed(1);
+  }
 
-  matchScreen.innerHTML = '';
-  progressIndicator.innerHTML = '';
-  messageBox.style.display = 'none';
+  updateCamera(dt);
 
-  let selectedEnglish = null;
-  let selectedSpanish = null;
-  const matchedPairs = new Set();
+  // 1) Renderizar escena en framebuffer sceneFBO
+  gl.bindFramebuffer(gl.FRAMEBUFFER, sceneFBO.fbo);
+  gl.viewport(0,0,sceneFBO.width, sceneFBO.height);
+  gl.enable(gl.DEPTH_TEST);
+  gl.clearColor(0,0,0,1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const totalMatches = questions.length;
-  const progressBoxes = [];
+  // Matrices
+  const proj = perspective(Math.PI/4, canvas.width/canvas.height, 0.1, 100);
+  const eye = camera.pos;
+  // Mirar en dirección cámara:
+  const center = [
+    eye[0] + Math.cos(camera.pitch) * Math.sin(camera.yaw),
+    eye[1] + Math.sin(camera.pitch),
+    eye[2] + Math.cos(camera.pitch) * Math.cos(camera.yaw),
+  ];
+  const view = lookAt(eye, center, [0,1,0]);
+  const model = createIdentity();
 
-  questions.forEach(() => {
-    const box = document.createElement('div');
-    box.className = 'progress-box';
-    progressIndicator.appendChild(box);
-    progressBoxes.push(box);
+  drawPlane(programScene, vaoScene, {
+    uProjection: proj,
+    uView: view,
+    uModel: model
   });
 
-  const laneCount = 18;
-  const verticalLanes = [];
-  const laneAvailable = [];
-  for (let i = 0; i < laneCount; i++) {
-    verticalLanes.push(window.innerHeight * 0.9 * i / laneCount);
-    laneAvailable.push(true);
-  }
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-  function createLaneLines() {
-    verticalLanes.forEach((top) => {
-      const line = document.createElement('div');
-      line.className = 'lane-line';
-      line.style.top = top + 'px';
-      matchScreen.appendChild(line);
-    });
-  }
+  // 2) Extraer brillo en bloomFBO1 (mitad resolución)
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO1.fbo);
+  gl.viewport(0,0,bloomFBO1.width, bloomFBO1.height);
+  gl.disable(gl.DEPTH_TEST);
+  gl.clearColor(0,0,0,1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
 
-  function getFreeLaneIndex() {
-    const freeIndexes = laneAvailable.map((isFree, idx) => isFree ? idx : -1).filter(idx => idx !== -1);
-    if (freeIndexes.length === 0) return null;
-    return freeIndexes[Math.floor(Math.random() * freeIndexes.length)];
-  }
-
-  function updateProgressUI() {
-    questions.forEach((q, index) => {
-      if (matchedPairs.has(q.question)) {
-        progressBoxes[index].classList.add('filled');
-      } else {
-        progressBoxes[index].classList.remove('filled');
-      }
-    });
-  }
-
-  function spawnButton(word, lang, pairKey) {
-    const laneIndex = getFreeLaneIndex();
-    if (laneIndex === null) return;
-
-    const top = verticalLanes[laneIndex];
-    const fromRight = laneIndex % 2 === 0;
-
-    const btn = document.createElement('button');
-    btn.className = 'word-button translation-button';
-    btn.innerText = word;
-    btn.dataset.lang = lang;
-    btn.dataset.word = word;
-    btn.dataset.key = pairKey;
-    btn.style.top = top + 'px';
-    btn.style.position = 'absolute';
-
-    let positionPx = fromRight ? window.innerWidth + 50 : -150;
-    const direction = fromRight ? -1 : 1;
-    btn.style.left = positionPx + 'px';
-
-    laneAvailable[laneIndex] = false;
-    matchScreen.appendChild(btn);
-
-    const speedPxPerSecond = 100;
-    const intervalTime = 30;
-
-    const interval = setInterval(() => {
-      positionPx += direction * (speedPxPerSecond * intervalTime / 1000);
-      btn.style.left = positionPx + 'px';
-
-      const outOfBounds = fromRight
-        ? positionPx < -200
-        : positionPx > window.innerWidth + 200;
-
-      if (outOfBounds) {
-        clearInterval(interval);
-        if (btn === selectedEnglish) selectedEnglish = null;
-        if (btn === selectedSpanish) selectedSpanish = null;
-        btn.remove();
-        laneAvailable[laneIndex] = true;
-      }
-    }, intervalTime);
-
-    btn.onclick = () => {
-      if (lang === 'en') {
-        if (selectedEnglish) selectedEnglish.classList.remove('selected');
-        selectedEnglish = btn;
-        btn.classList.add('selected');
-      } else {
-        if (selectedSpanish) selectedSpanish.classList.remove('selected');
-        selectedSpanish = btn;
-        btn.classList.add('selected');
-      }
-      checkMatch();
-    };
-  }
-
-  function checkMatch() {
-    if (!selectedEnglish || !selectedSpanish) return;
-
-    const match = questions.find(q =>
-      q.question === selectedEnglish.dataset.word &&
-      q.translation === selectedSpanish.dataset.word
-    );
-    const pairKey = match ? match.question : null;
-
-    const keyA = selectedEnglish.dataset.key;
-    const keyB = selectedSpanish.dataset.key;
-
-    if (match && keyA === keyB) {
-      if (!matchedPairs.has(pairKey)) {
-        matchedPairs.add(pairKey);
-        updateProgressUI();
-      }
-
-      selectedEnglish.classList.add('matched');
-      selectedSpanish.classList.add('matched');
-      selectedEnglish.classList.remove('selected');
-      selectedSpanish.classList.remove('selected');
-      selectedEnglish.disabled = true;
-      selectedSpanish.disabled = true;
-
-      if (matchedPairs.size >= totalMatches) {
-        setTimeout(() => {
-          finishLevel(true); // ✅ Finish and continue
-        }, 500);
-      }
-    } else {
-      selectedEnglish.classList.add('wrong');
-      selectedSpanish.classList.add('wrong');
-      setTimeout(() => {
-        selectedEnglish.classList.remove('wrong', 'selected');
-        selectedSpanish.classList.remove('wrong', 'selected');
-      }, 800);
-    }
-
-    selectedEnglish = null;
-    selectedSpanish = null;
-  }
-
-  function startSpawner() {
-    let pairQueue = [...questions];
-    let currentIndex = 0;
-
-    function shuffleQueue() {
-      for (let i = pairQueue.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [pairQueue[i], pairQueue[j]] = [pairQueue[j], pairQueue[i]];
-      }
-    }
-
-    shuffleQueue();
-
-    const interval = setInterval(() => {
-      if (matchedPairs.size >= totalMatches) {
-        clearInterval(interval);
-        return;
-      }
-
-      const pair = pairQueue[currentIndex];
-      const pairKey = pair.question;
-
-      if (!matchedPairs.has(pairKey)) {
-        spawnButton(pair.question, 'en', pairKey);
-        spawnButton(pair.translation, 'es', pairKey);
-      }
-
-      currentIndex++;
-      if (currentIndex >= pairQueue.length) {
-        currentIndex = 0;
-        shuffleQueue();
-      }
-    }, 800); // You can tweak interval speed here
-  }
-
-  updateProgressUI();
-  createLaneLines();
-  startSpawner();
-}
-
- 
-function loadCatch() {
-  const q = questions[currentQuestionIndex];
-  document.getElementById("catch-question").innerText = q.question;
-  const screen = document.getElementById("catch-screen");
-  screen.innerHTML = "";
-  movingRectangles = [];
-
-  questions.forEach(item => {
-    const btn = document.createElement("button");
-    btn.className = "translation-button catch-button";
-    btn.innerText = item.translation;
-    screen.appendChild(btn);
-    positionRectangle(btn, screen);
-    moveRectangle(btn, screen);
-
-    btn.onclick = () => {
-      if (item.translation === q.translation) {
-        btn.classList.add("correct");
-
-        // ✅ Speak correct answer
-        const utterance = new SpeechSynthesisUtterance(item.translation);
-        if (selectedVoice) utterance.voice = selectedVoice;
-        speechSynthesis.speak(utterance);
-
-        setTimeout(() => nextCatchQuestion(), 1000);
-      } else {
-        btn.classList.add("incorrect");
-        mistakes = true;
-      }
-    };
-
-    movingRectangles.push(btn);
-  });
-}
-
-function positionRectangle(rectangle, screen) {
-  const maxX = screen.offsetWidth - rectangle.offsetWidth;
-  const maxY = screen.offsetHeight - rectangle.offsetHeight;
-  rectangle.style.left = `${Math.random() * maxX}px`;
-  rectangle.style.top = `${Math.random() * maxY}px`;
-}
-
-function moveRectangle(rectangle, screen) {
-  let directionX = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 2);
-  let directionY = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 2);
-
-  function move() {
-    let currentX = parseFloat(rectangle.style.left) || 0;
-    let currentY = parseFloat(rectangle.style.top) || 0;
-
-    const maxX = screen.clientWidth - rectangle.offsetWidth;
-    const maxY = screen.clientHeight - rectangle.offsetHeight;
-
-    if (currentX <= 0 || currentX >= maxX) directionX *= -1;
-    if (currentY <= 0 || currentY >= maxY) directionY *= -1;
-
-    currentX = Math.max(0, Math.min(currentX + directionX * speedMultiplier, maxX));
-    currentY = Math.max(0, Math.min(currentY + directionY * speedMultiplier, maxY));
-
-    rectangle.style.left = `${currentX}px`;
-    rectangle.style.top = `${currentY}px`;
-
-    requestAnimationFrame(move);
-  }
-
-  move();
-}
-
-function nextCatchQuestion() {
-  currentQuestionIndex++;
-  if (currentQuestionIndex < questions.length) {
-    loadCatch();
-  } else {
-    finishLevel(!mistakes);
-  }
-}
-
-// -----------------
-// Activity: Listen
-// -----------------
-function loadListen() {
-  const q = questions[currentQuestionIndex];
-  document.getElementById("listen-question").innerText = q.question;
-  const container = document.getElementById("listen-buttons");
-  container.innerHTML = "";
-  selectedListenButton = null;
-
-  const options = shuffle([...questions]);
-  options.forEach(opt => {
-    const btn = document.createElement("button");
-    btn.className = "translation-button listen-button"; // UPDATED
-    btn.style.position = "static";
-    btn.onclick = () => {
-      if (selectedListenButton) {
-        selectedListenButton.classList.remove("active");
-      } 
-      selectedListenButton = btn;
-      btn.classList.add("active");
-const utterance = new SpeechSynthesisUtterance(opt.translation);
-utterance.lang = 'es-ES';
-if (selectedVoice) {
-  utterance.voice = selectedVoice;
-}
-speechSynthesis.speak(utterance);    };
-    btn.dataset.correct = (opt.translation === q.translation);
-    container.appendChild(btn);
-  });
-}
-
-function checkListenAnswer() {
-  if (!selectedListenButton) return;
-  if (selectedListenButton.dataset.correct === "true") {
-    selectedListenButton.classList.add("correct");
-    setTimeout(() => nextListenQuestion(), 1000);
-  } else {
-    selectedListenButton.classList.add("incorrect");
-    mistakes = true;
-  }
-}
-
-function nextListenQuestion() {
-  currentQuestionIndex++;
-  if (currentQuestionIndex < questions.length) {
-    loadListen();
-  } else {
-    finishLevel(!mistakes);
-  }
-}
-
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-function makeSlower() {
-  speedMultiplier *= 0.85;
-  document.getElementById("normalSpeedBtn").style.display = "inline-block";
-}
-
-function resetSpeed() {
-  speedMultiplier = 1;
-  document.getElementById("normalSpeedBtn").style.display = "none";
-}
-
-function loadSpeak() {
-  const q = questions[currentQuestionIndex];
-  document.getElementById("speak-question").innerText =
-    `${q.question}`;
-  document.getElementById("speak-result").innerHTML = "";
-
-  // Disable buttons at edges
-  document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
-  document.getElementById("next-btn").disabled = currentQuestionIndex === questions.length - 1;
-}
-
-loadSpeak(); // Initialize
-
-function startSpeaking() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert("Speech Recognition is not supported in this browser.");
-    return;
-  }
-
-  window.speechSynthesis.cancel();
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'es-ES';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-
-  const resultBox = document.getElementById("speak-result");
-  resultBox.classList.add('listening');
-
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript.trim();
-    const correctAnswer = questions[currentQuestionIndex].translation;
-    resultBox.innerHTML = renderRecognitionResult(correctAnswer, transcript);
-    resultBox.classList.remove('listening');
-  };
-
-  recognition.onspeechend = () => {
-    recognition.stop();
-    resultBox.classList.remove('listening');
-  };
-
-  recognition.onerror = () => {
-    resultBox.innerHTML = `<p style="color:red;">? Could not understand. Try again.</p>`;
-    resultBox.classList.remove('listening');
-  };
-
-  recognition.start();
-}
-
-function renderRecognitionResult(correct, user) {
-  const correctWords = correct.trim().split(/\s+/);
-  const userWords = user.trim().split(/\s+/);
-
-  const resultHTML = userWords.map((word, i) => {
-    const correctWord = correctWords[i] || "";
-    const match = word.toLowerCase() === correctWord.toLowerCase();
-    return `<span class="${match ? 'correct' : 'incorrect'}">${match ? word : word.toUpperCase()}</span>`;
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, sceneFBO.texture);
+  drawFullscreenQuad(programThreshold, {
+    uTexture: sceneFBO.texture
   });
 
-  const allCorrect = userWords.length === correctWords.length &&
-    userWords.every((word, i) => word.toLowerCase() === (correctWords[i] || "").toLowerCase());
+  // 3) Blur horizontal en bloomFBO2
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO2.fbo);
+  gl.viewport(0,0,bloomFBO2.width, bloomFBO2.height);
+  gl.clearColor(0,0,0,1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
 
-  if (allCorrect) {
-    return `<div class="result-box correct-box">
-              <p><strong>? Correct!</strong><br>${user}</p>
-            </div>`;
-  } else {
-    return `<div class="result-box incorrect-box">
-              <p><strong>You said:</strong><br>${resultHTML.join(" ")}</p>
-              <p><strong>Expected:</strong><br><span class="expected">${correct}</span></p>
-            </div>`;
-  }
-}
-
-function nextSpeakQuestion() {
-  if (currentQuestionIndex < questions.length - 1) {
-    currentQuestionIndex++;
-    loadSpeak();
-  }
-}
-
-function prevSpeakQuestion() {
-  if (currentQuestionIndex > 0) {
-    currentQuestionIndex--;
-    loadSpeak();
-  }
-}
-function showMessage(message, onContinue = null) {
-  const box = document.getElementById("message-box");
-  box.innerHTML = `
-    <div>${message}</div>
-    ${onContinue ? `<div style="margin-top: 2vh;"><button id="continue-btn">Continue</button></div>` : ""}
-  `;
-  box.style.display = "block";
-
-  function handleClick() {
-    box.style.display = "none";
-    box.removeEventListener("click", handleClick);
-    if (onContinue) onContinue();
-  }
-
-  if (onContinue) {
-    box.addEventListener("click", handleClick);
-  } else {
-    setTimeout(() => {
-      box.style.display = "none";
-    }, 3000);
-  }
-}
-
- function toggleActivities() {
-    const activityDiv = document.getElementById('activity-buttons');
-    activityDiv.style.display = (activityDiv.style.display === 'none') ? 'flex' : 'none';
-  }
-let availableVoices = [];
-let selectedVoice = null;
-
-function cleanVoiceName(name) {
-  return name
-    .replace(/\(.*?\)/g, '')                         // Remove anything in parentheses
-    .replace(/\b(Google|Microsoft|Spanish)\b/gi, '') // Remove specific words
-    .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g, '')        // Remove all non-letter symbols
-    .replace(/\s+/g, ' ')                            // Collapse multiple spaces
-    .trim();
-}
-
-function toggleCustomDropdown() {
-  const dropdown = document.getElementById("customDropdown");
-  if (dropdown.style.display === "none") {
-    populateCustomDropdown();
-    dropdown.style.display = "block";
-  } else {
-    dropdown.style.display = "none";
-  }
-}
-
-function populateCustomDropdown() {
-  const dropdown = document.getElementById("customDropdown");
-  dropdown.innerHTML = "";
-
-  availableVoices = speechSynthesis.getVoices().filter(voice => voice.lang.startsWith("es"));
-
-  availableVoices.forEach((voice, index) => {
-    const cleanedName = cleanVoiceName(voice.name);
-    const div = document.createElement("div");
-    div.textContent = cleanedName || `Voice ${index + 1}`;
-    div.onclick = () => {
-      selectedVoice = voice;
-      dropdown.style.display = "none";
-    };
-    dropdown.appendChild(div);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, bloomFBO1.texture);
+  drawFullscreenQuad(programBlurH, {
+    uTexture: bloomFBO1.texture,
+    uTexelSize: 1 / bloomFBO1.width
   });
-}
-   
-// Ensure voices are ready
-speechSynthesis.onvoiceschanged = populateCustomDropdown;
 
-function goBackToMenu() {
-  singleActivityMode = false;
-  document.getElementById("back-button").style.display = "none";
-  document.querySelectorAll(".activity").forEach(div => div.style.display = "none");
-  document.getElementById("level-container").style.display = "block";
-}
+  // 4) Blur vertical en bloomFBO1
+  gl.bindFramebuffer(gl.FRAMEBUFFER, bloomFBO1.fbo);
+  gl.viewport(0,0,bloomFBO1.width, bloomFBO1.height);
+  gl.clearColor(0,0,0,1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
 
-function toggleGroup(groupName) {
-  const allGroups = ['training', 'arcade', 'voice'];
-  allGroups.forEach(name => {
-    const div = document.getElementById(`${name}-buttons`);
-    if (name === groupName) {
-      div.style.display = (div.style.display === 'flex') ? 'none' : 'flex';
-    } else {
-      div.style.display = 'none';
-    }
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, bloomFBO2.texture);
+  drawFullscreenQuad(programBlurV, {
+    uTexture: bloomFBO2.texture,
+    uTexelSize: 1 / bloomFBO2.height
   });
+
+  // 5) Combinar escena + bloom en pantalla
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.viewport(0,0,canvas.width, canvas.height);
+  gl.clearColor(0,0,0,1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  drawFullscreenQuad(programCombine, {
+    uScene: sceneFBO.texture,
+    uBloom: bloomFBO1.texture
+  });
+
+  requestAnimationFrame(render);
 }
+
+requestAnimationFrame(render);
 
 </script>
-
-
 </body>
 </html>
